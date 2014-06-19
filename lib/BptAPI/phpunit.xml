@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="vendor/autoload.php" colors="true">
+    <testsuites>
+        <testsuite name="all">
+            <directory>tests/BrownPaperTickets</directory>
+        </testsuite>
+        <testsuite name="get">
+            <directory>tests/BrownPaperTickets/Get/</directory>
+        </testsuite>
+        <testsuite name="create">
+            <directory>tests/BrownPaperTickets/Create/</directory>
+        </testsuite>
+        <testsuite name="error">
+            <directory>tests/BrownPaperTickets/Errors/</directory>
+        </testsuite>
+        <testsuite name="submit">
+            <directory>tests/BrownPaperTickets/Order/</directory>
+        </testsuite>
+    </testsuites>
+    <filter>
+        <whitelist>
+            <directory suffix=".php">src/BrownPaperTickets</directory>
+        </whitelist>
+    </filter>
+</phpunit>

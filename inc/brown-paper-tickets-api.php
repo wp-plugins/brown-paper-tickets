@@ -45,7 +45,7 @@ class BPTFeed {
 
 		$events = $events->getEvents( $client_id, null, $dates, $prices );
 
-		$clndr_format = [];
+		$clndr_format = array();
 
 		foreach ( $events as $event ) {
 

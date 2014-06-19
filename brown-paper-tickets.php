@@ -6,7 +6,7 @@
  * Wordpress posts, sidebar etc. Tickets can also be directly.
  *
  * @package   BrownPaperTickets
- * @author    Chandler Blum <chandler@brownpapertickets.com>
+ * @author    Brown Paper Tickets <chandler@brownpapertickets.com>
  * @license   GPL-2.0+
  * @link      http://www.brownpapertickets.com
  * @copyright 2014 Brown Paper Tickets
@@ -16,7 +16,7 @@
  * Plugin URI:        http://www.brownpapertickets.com
  * Description:       Display your events!
  * Version:           0.1.1
- * Author:            Chandler Blum
+ * Author:            Brown Paper Tickets
  * Author URI:        http://www.brownpapertickets.com
  * Text Domain:       brown-paper-tickets-locale
  * License:           GPL-2.0+

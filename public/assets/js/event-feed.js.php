@@ -90,7 +90,6 @@
                 bptData.eventID = this.bptWpObject.eventID
             }
 
-            console.log($('div.bpt-loading-' + self.postID) );
             $('div.bpt-loading-' + self.postID).fadeIn();
 
             $.ajax(
@@ -114,8 +113,6 @@
             })
             .done(function(data) {
                 if (data.error) {
-
-                    console.log(data);
 
                     self.eventList.set({
                         bptError: data

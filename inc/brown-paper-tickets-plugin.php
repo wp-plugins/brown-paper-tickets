@@ -5,7 +5,7 @@
 
 namespace BrownPaperTickets;
 
-const VERSION = '0.1.1';
+const VERSION = '0.1.2';
 
 const PLUGIN_SLUG = 'brown_paper_tickets';
 
@@ -82,14 +82,6 @@ class BPTPlugin {
 		if ( ! current_user_can( 'activate_plugins' ) ) {
 			return;
 		}
-	}
-
-	public static function uninstall() {
-		if ( ! current_user_can( 'activate_plugins' ) ) {
-			return;
-		}
-
-		check_admin_referer( 'bulk-plugins' );
 
 		// Important: Check if the file is the one
 		// that was registered during the uninstall hook.
@@ -97,7 +89,26 @@ class BPTPlugin {
 			return;
 		}
 
-		self::remove_event_options();
+	}
+
+	/**
+	 * This function is not in use.
+	 */
+	public static function uninstall() {
+
+		if ( ! current_user_can( 'activate_plugins' ) ) {
+			return;
+		}
+
+		check_admin_referer( 'delete-selected' );
+
+		// Important: Check if the file is the one
+		// that was registered during the uninstall hook.
+		if ( __FILE__ != WP_UNINSTALL_PLUGIN ) {
+			return;
+		}
+
+		self::delete_bpt_options();
 	}
 
 	public function load_admin() {
@@ -392,6 +403,28 @@ class BPTPlugin {
 		delete_option( self::$menu_slug . $setting_prefix . 'currency' );
 		delete_option( self::$menu_slug . $setting_prefix . 'price_sort' );
 		delete_option( self::$menu_slug . $setting_prefix . 'show_sold_out_prices' );
+	}
+
+	private static function delete_bpt_options() {
+
+		global $wpdb;
+
+		$bpt_options = $wpdb->get_results(
+			'SELECT *
+			FROM `wp_options`
+			WHERE `option_name` LIKE \'%_bpt_%\'',
+			OBJECT
+		);
+
+		if ( ! empty( $bpt_options ) ) {
+
+			foreach ( $bpt_options as $bpt_option ) {
+				
+				$option_name = $bpt_option->option_name;
+
+				delete_option( $option_name );
+			}
+		}
 	}
 
 

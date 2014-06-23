@@ -4,7 +4,7 @@ Donate Link: N/A
 Tags: bpt, brown paper tickets
 Requires at least: 3.6
 Tested up to: 3.9.1
-Stable tag: 0.1.1
+Stable tag: 0.1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -108,6 +108,24 @@ The ability to easily add your custom style sheet is a top priority for the next
 No upgrade notes.
 
 == Changelog ==
+
+= v0.1.2 =
+
+**Improvements**
+
+* Added proper uninstall functions.
+
+**Bug Fixes**
+
+* Fixed issue where event calendar wasn't being displayed if a widget
+wasn't in place.
+
+* Fixed issue where the cache wasn't being deleted properly. 
+
+**Miscellaneous**
+
+* Updated header in main plugin file.
+
 
 = v0.1.1 =
 **Improvements**

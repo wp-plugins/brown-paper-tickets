@@ -60,7 +60,7 @@ class BPTCalendarWidget extends \WP_Widget {
 		$time_format  = get_option( '_bpt_time_format' );
 
 
-		if ( is_active_widget( false, false, $this->id_base, true ) ) {
+		if ( is_active_widget( false, false, $this->id_base, true ) || $args['widget_id'] === 'shortcode' ) {
 
 			BPTPlugin::load_ajax_required();
 

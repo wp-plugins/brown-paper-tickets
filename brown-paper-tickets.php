@@ -14,8 +14,8 @@
  * @wordpress-plugin
  * Plugin Name:       Brown Paper Tickets
  * Plugin URI:        http://www.brownpapertickets.com
- * Description:       Display your events!
- * Version:           0.1.1
+ * Description:       Display your Brown Paper Tickets events using convenient shortcodes and widgets.
+ * Version:           0.1.2
  * Author:            Brown Paper Tickets
  * Author URI:        http://www.brownpapertickets.com
  * Text Domain:       brown-paper-tickets-locale
@@ -35,7 +35,6 @@ if ( ! defined( 'WPINC' ) ) {
 
 register_activation_hook( __FILE__, array( 'BrownPaperTickets\BPTPlugin', 'activate' ) );
 register_deactivation_hook( __FILE__, array( 'BrownPaperTickets\BPTPlugin', 'deactivate' ) );
-register_uninstall_hook( __FILE__, array( 'BrownPaperTickets\BPTPlugin', 'uninstall' ) );
 
 add_action( 'plugins_loaded', array( 'BrownPaperTickets\BPTPlugin', 'get_instance' ) );
 

@@ -703,7 +703,7 @@ class BPTSettingsFields {
 
 				<div class="bpt-advanced-options">
 					<button class="button-large button" id="bpt-delete-cache">Delete Cache</button>
-					<img class="bpt-loading hidden" src="<?php echo esc_url( plugins_url( '/assets/img/loading.gif', dirname( __FILE__ ) ) ); ?>">
+					<img class="bpt-loading hidden" src="<?php echo esc_url( plugins_url( '/public/assets/img/loading.gif', dirname( __FILE__ ) ) ); ?>">
 					<p class="bpt-success-message hidden"></p>
 					<p class="bpt-error-message hidden"></p>
 				</div>

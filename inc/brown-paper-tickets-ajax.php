@@ -48,8 +48,6 @@ class BPTAjaxActions {
 
 			set_transient( '_bpt_event_list_events' . $post_id , $events->get_json_events( $client_id, $event_id ), self::cache_time() );
 
-			self::update_cached_data( '_bpt_event_list_events' . $post_id , self::cache_time() );
-
 		}
 
 		exit( get_transient( '_bpt_event_list_events' . $post_id  ) );
@@ -95,9 +93,7 @@ class BPTAjaxActions {
 
 			set_transient( '_bpt_calendar_events_' . $widget_instance, $events->get_json_calendar_events( $client_id ), self::cache_time() );
 
-			self::update_cached_data( '_bpt_calendar_events_' . $widget_instance, self::cache_time() );
-
-		} 
+		}
 
 		exit( get_transient( '_bpt_calendar_events_' . $widget_instance ) );
 
@@ -114,8 +110,6 @@ class BPTAjaxActions {
 			$account = new BPTFeed;
 
 			set_transient( '_bpt_user_account_info', $account->get_json_account(), 0 );
-
-			self::update_cached_data( '_bpt_user_account_info', 0 );
 			
 		}
 
@@ -163,15 +157,18 @@ class BPTAjaxActions {
 
 	public static function bpt_delete_cache() {
 
-		$cached_data = get_option( '_bpt_cached_data' );
-
-		$deleted_data = array();
-
-		// exit( json_encode( $cached_data ) );
+		global $wpdb;
 
 		header( 'Content-type: application/json' );
 
-		if ( $cached_data === '' || ! $cached_data ) {
+		$cached_data = $wpdb->get_results(
+			'SELECT *
+			FROM `wp_options`
+			WHERE `option_name` LIKE \'%_transient__bpt_%\'',
+			OBJECT
+		);
+
+		if ( empty( $cached_data ) ) {
 			$result = array(
 				'status' => 'success',
 				'message' => 'No cached data to delete.',
@@ -179,24 +176,18 @@ class BPTAjaxActions {
 
 			exit (json_encode( $result ) );
 		}
+		
+		if ( ! empty( $cached_data ) ) {
 
-		if ( $cached_data === false ) {
+			foreach ( $cached_data as $cache ) {
 
-			$result = array(
-				'status' => 'fail',
-				'message' => 'Could not delete cached data.',
-				'debug' => $cached_data,
-			);
+				$option_name = $cache->option_name;
 
-			exit( json_encode( $result ) );
+				$option_name = str_replace( '_transient_', '', $option_name );
+
+				delete_transient( $option_name );
+			}
 		}
-
-		foreach ( $cached_data as $cache_title => $cache_time ) {
-			
-			$deleted_data[$cache_title] = delete_transient( $cache_title );
-		}
-
-		delete_option( '_bpt_cached_data' );
 
 		$result = array(
 			'status' => 'success',
@@ -205,20 +196,6 @@ class BPTAjaxActions {
 
 		exit( json_encode( $result ) );
 	}
-
-
-	private static function update_cached_data( $cache_title, $cache_time ) {
-
-			$cached_data = get_option( '_bpt_cached_data' );
-
-			$cached_data[$cache_title] = $cache_time;
-
-			$updated_cache = update_option( '_bpt_cached_data', $cached_data );
-
-			return $updated_cache;
-
-	}
-
 
 	private static function check_nonce( $nonce, $nonce_title ) {
 

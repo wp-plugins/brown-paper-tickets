@@ -15,13 +15,13 @@
  * Plugin Name:       Brown Paper Tickets
  * Plugin URI:        http://www.brownpapertickets.com
  * Description:       Display your Brown Paper Tickets events using convenient shortcodes and widgets.
- * Version:           0.1.2
+ * Version:           0.1.2.1
  * Author:            Brown Paper Tickets
  * Author URI:        http://www.brownpapertickets.com
  * Text Domain:       brown-paper-tickets-locale
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
- * Domain Path:       /languages
+ * Domain Path:       /languages	
  */
 
 

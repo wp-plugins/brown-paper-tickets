@@ -27,11 +27,11 @@ $plugin_version = BPTPlugin::get_plugin_version();
 			</p>
 
 			<p>
-				If you would like to request a new feature or if you have discovered a bug (i.e. an event is displaying when it shouldn't be), please go <a target="_blank" href="https://github.com/chantron/brown-paper-tickets-wordpress/issues/new">here</a></span> to open up a new issue.
+				If you would like to request a new feature or if you have discovered a bug (i.e. an event is displaying when it shouldn't be), please go <a target="_blank" href="https://github.com/BrownPaperTickets/brown-paper-tickets-wordpress/issues/new">here</a></span> to open up a new issue.
 			</p>
 		</div>
 
-		<span class="bpt-welcome-info-plugin-info">Plugin Info: <?php esc_html_e( $plugin_slug . ' v' . $plugin_version ); ?> - <a class="bpt-submit-issue" target="_blank" href="https://github.com/chantron/brown-paper-tickets-wordpress/issues/new">Submit Bug</a></span>
+		<span class="bpt-welcome-info-plugin-info">Plugin Info: <?php esc_html_e( $plugin_slug . ' v' . $plugin_version ); ?> - <a class="bpt-submit-issue" target="_blank" href="https://github.com/BrownPaperTickets/brown-paper-tickets-wordpress/issues/new">Submit Bug</a></span>
 	</div>
 	<nav id="<?php esc_attr_e( $menu_slug );?>">
 		<ul>

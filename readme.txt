@@ -4,7 +4,7 @@ Donate Link: N/A
 Tags: bpt, brown paper tickets
 Requires at least: 3.6
 Tested up to: 3.9.1
-Stable tag: 0.1.2
+Stable tag: 0.1.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -16,13 +16,13 @@ The Brown Paper Tickets plugin is a simple way to display events in a Wordpress 
 
 The Brown Paper Tickets plugin is Free Software, released under the [GNU GPL v2 or later](http://www.gnu.org/licenses/gpl-2.0.txt). Certain libraries used by the plugin (see About section) are licensed under the MIT License.
 
-It's source code can be found on [Github](https://github.com/chantron/brown-paper-tickets-wordpress).
+It's source code can be found on [Github](https://github.com/BrownPaperTickets/brown-paper-tickets-wordpress).
 
 **There are some caveats to using this plugin. PLEASE READ!**
 
 * The data returned by the [pricelist](http://www.brownpapertickets.com/apidocs/2.0/pricelist.html) API call does not make a distinction between password protected prices and regular prices. As a result, prices that are typically hidden by passwords on BPT will show up via the plugin. **DO NOT use this plugin if you intend to use the event list feature or want your password protected prices to stay hidden.** Calendar format should be OK as it does not make the price list API call.
 
-**Please use the [Issues](https://github.com/chantron/brown-paper-tickets-wordpress/issues/new) page to submit bugs, feature requests, etc.**
+**Please use the [Issues](https://github.com/BrownPaperTickets/brown-paper-tickets-wordpress/issues/new) page to submit bugs, feature requests, etc.**
 
 == Installation == 
 

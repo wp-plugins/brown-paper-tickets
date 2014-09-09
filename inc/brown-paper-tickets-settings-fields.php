@@ -72,8 +72,7 @@ class BPTSettingsFields {
 				<span>?</span>
 				<div>
 					<p>
-						This option determines whether or not your event's prices will appear
-						in your event listing. 
+						This option determines whether or not your event's prices will appear in your event listing. 
 					</p>
 				</div>
 			</div>
@@ -94,8 +93,7 @@ class BPTSettingsFields {
 				<span>?</span>
 				<div>
 					<p>
-						This option determines whether or not your event's prices will appear
-						in your event listing. 
+						This option determines whether or not your event's prices will appear in your event listing. 
 					</p>
 				</div>
 			</div>
@@ -116,7 +114,7 @@ class BPTSettingsFields {
 				<span>?</span>
 				<div>
 					<p>
-						This option determines or not to show your event's end time.
+						This option determines whether or not to show your event's end time.
 					</p>
 				</div>
 			</div>
@@ -154,7 +152,7 @@ class BPTSettingsFields {
 				<span>?</span>
 				<div>
 					<p>
-						This option will determine the format that your event's dates will be in.
+						This option will determine the format that your event's dates will appear in.
 					</p>
 					<p>
 						Choose from a set of predefined options or set your own
@@ -193,7 +191,7 @@ class BPTSettingsFields {
 				<span>?</span>
 				<div>
 					<p>
-						This option determines the format you wish your dates to be displayed in.
+						This option determines the format you wish your dates to appear in.
 					</p>
 					<p>
 						If you set a custom option, see <a href="http://momentjs.com/docs/#/displaying/format/" target="_blank">Moment.js documentation</a> for all of the potential parameters.
@@ -223,7 +221,7 @@ class BPTSettingsFields {
 				<span>?</span>
 				<div>
 					<p>
-						<h4>This plugin has no method to determine which shipping options are available for your events.</h3>
+						<h4>This plugin has no way to determine which shipping options are available for your events.</h3>
 					</p>
 					<p>
 						<h4>You must ensure that the options you select here are actually enabled on your event</h3>
@@ -570,7 +568,7 @@ class BPTSettingsFields {
 				<span>?</span>
 				<div>
 					<p>
-						This option determines or not to show the full description by default.
+						This option determines whether or not to show the full description by default.
 					</p>
 				</div>
 			</div>
@@ -714,8 +712,31 @@ class BPTSettingsFields {
 	 * Purchase Fields
 	 */
 	
-	public function get_allow_purchase_input() {
+	// public function get_allow_purchase_input() {
 
+	// }
+
+	/**
+	 * Show Upcoming Dates in Calendar
+	 */
+	
+	public function get_show_upcoming_events_calendar_input() {
+		?>
+		<div class="show-upcming-dates-calendar-wrapper">
+			<input id="show-upcoming-dates-calendar-true" name="_bpt_show_upcoming_events_calendar" <?php esc_attr_e( $this->is_selected( 'true', '_bpt_show_upcoming_events_calendar', 'checked' ) );?> value="true" type="radio" />
+			<label for="show-upcoming-events-calendar-true">Yes</label>
+			<input id="show-upcoming-events-calendar-false" name="_bpt_show_upcoming_events_calendar" <?php esc_attr_e( $this->is_selected( 'false', '_bpt_show_upcoming_events_calendar', 'checked' ) ); ?> value="false" type="radio" />
+			<label for="show-upcoming-events-calendar-false">No</label>
+			<div class="<?php esc_attr_e( BPTPlugin::get_menu_slug() ); ?>_help">
+				<span>?</span>
+				<div>
+					<p>
+						If you would like to show upcoming events in the calendar, select yes.
+					</p>
+				</div>
+			</div>
+		</div>
+		<?php
 	}
 
 	/**

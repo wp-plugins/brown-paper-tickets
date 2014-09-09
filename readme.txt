@@ -3,8 +3,8 @@ Contributors: Chandler Blum
 Donate Link: N/A
 Tags: bpt, brown paper tickets
 Requires at least: 3.6
-Tested up to: 3.9.1
-Stable tag: 0.1.2.1
+Tested up to: 4.0
+Stable tag: 0.1.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -108,6 +108,24 @@ The ability to easily add your custom style sheet is a top priority for the next
 No upgrade notes.
 
 == Changelog ==
+
+= v0.1.3 =
+**Improvements**
+
+* Refactored Calendar Javascript
+
+**New Option in Settings**
+
+* Added Calendar Options settings. You can now set the "Show upcoming
+Events in Calendar" option. When enabled, this will show the next 5 
+events in the event listing if the clicked day does not have any events.
+When switching months, it will also show all of the upcoming events in 
+that month.
+
+**Bug Fixes**
+
+* Fixed issue where shortcodes weren't being placed in the proper place.
+* Fixed various typos and grammatical errors.
 
 = v0.1.2 =
 

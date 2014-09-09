@@ -67,8 +67,6 @@ class BPTFeed {
 							'zip' => $event['zip'],
 							'shortDescription' => $event['shortDescription'],
 						);
-				
-					
 					}
 				}
 			}

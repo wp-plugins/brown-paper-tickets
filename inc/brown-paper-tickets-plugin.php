@@ -5,7 +5,7 @@
 
 namespace BrownPaperTickets;
 
-const VERSION = '0.1.2';
+const VERSION = '0.1.3';
 
 const PLUGIN_SLUG = 'brown_paper_tickets';
 
@@ -137,8 +137,6 @@ class BPTPlugin {
 		add_action( 'wp_ajax_nopriv_bpt_get_events', array( 'BrownPaperTickets\BPTAjaxActions', 'bpt_get_events' ) );
 		add_action( 'wp_ajax_nopriv_bpt_get_account', array( 'BrownPaperTickets\BPTAjaxActions', 'bpt_get_account' ) );
 		add_action( 'wp_ajax_nopriv_bpt_get_calendar_events', array( 'BrownPaperTickets\BPTAjaxActions', 'bpt_get_calendar_events' ) );
-
-
 		
 		add_action( 'wp_enqueue_scripts', array( $this, 'load_public_scripts' ) );
 	}
@@ -151,11 +149,11 @@ class BPTPlugin {
 			}
 		);
 
-		add_action(
-			'widgets_init', function(){
-				register_widget( 'BrownPaperTickets\BPTEventListWidget' );
-			}
-		);
+		// add_action(
+		// 	'widgets_init', function(){
+		// 		register_widget( 'BrownPaperTickets\BPTEventListWidget' );
+		// 	}
+		// );
 		
 	}
 
@@ -235,6 +233,7 @@ class BPTPlugin {
 		$this->register_bpt_general_settings();
 		$this->register_bpt_api_settings();
 		$this->register_bpt_event_list_settings();
+		$this->register_bpt_calendar_settings();
 		$this->register_bpt_purchase_settings();
 	}
 
@@ -329,6 +328,19 @@ class BPTPlugin {
 		add_settings_field( $setting_prefix . 'price_sort', 'Price Sort', array( $this->settings_fields, 'get_price_sort_input' ), self::$menu_slug . $section_suffix, $price_section_title );
 	}
 
+	public function register_bpt_calendar_settings() {
+		$setting_prefix = '_bpt_';
+		$section_suffix = '_calendar';
+		$section_title  = 'Calendar Settings';
+
+		register_setting( self::$menu_slug, $setting_prefix . 'show_upcoming_events_calendar' );
+
+		add_settings_section( $section_title, $section_title, null, self::$menu_slug . $section_suffix );
+		
+		add_settings_field( $setting_prefix . 'show_upcoming_events_calendar', 'Display Upcoming Events in Calendar', array( $this->settings_fields, 'get_show_upcoming_events_calendar_input' ), self::$menu_slug . $section_suffix, $section_title );
+
+	}
+
 	/**
 	 * Set the Default Values
 	 */
@@ -369,6 +381,10 @@ class BPTPlugin {
 		add_option( self::$menu_slug . $setting_prefix . 'show_sold_out_prices', 'false' );
 	}
 
+	private static function set_default_calendar_option_values() {
+		add_option( self::$menu_slug . $setting_prefix . 'show_upcoming_events_calendar', 'false' );
+	}
+
 	private static function remove_general_options() {
 		$setting_prefix = '_bpt_';
 		$section_suffix = '_general';
@@ -403,6 +419,10 @@ class BPTPlugin {
 		delete_option( self::$menu_slug . $setting_prefix . 'currency' );
 		delete_option( self::$menu_slug . $setting_prefix . 'price_sort' );
 		delete_option( self::$menu_slug . $setting_prefix . 'show_sold_out_prices' );
+	}
+
+	private static function remove_date_options() {
+		delete_option( self::$menu_slug . $setting_prefix . 'show_upcoming_events_calendar' );
 	}
 
 	private static function delete_bpt_options() {
@@ -447,12 +467,6 @@ class BPTPlugin {
 		add_settings_field( $setting_prefix . 'client_id', 'Client ID', array( $this->settings_fields, 'get_client_id_input' ), self::$menu_slug . $section_suffix, $section_title );
 	}
 
-	public function register_bpt_calendar_settings() {
-		$setting_prefix = '_bpt_';
-		$section_prefix = '_calendar';
-		$section_title  = 'Calendar Settings';
-
-	}
 
 	public function register_bpt_purchase_settings() {
 		$setting_prefix = '_bpt_';
@@ -524,8 +538,10 @@ class BPTPlugin {
 			);
 
 		}
+		
+		$event_list_path = plugin_dir_path( __FILE__ ) . '../public/event-list-shortcode.php';
 
-		require( plugin_dir_path( __FILE__ ) . '../public/event-list-shortcode.php' );
+		return require($event_list_path);
 	}
 
 	public function event_calendar_shortcode( $atts ) {
@@ -533,22 +549,22 @@ class BPTPlugin {
 		$calendar_attributes = shortcode_atts(
 			array(
 				'client_id' => null,
-				'title' => null,
+				'title' => '',
 			),
 			$atts
 		);
 
 		$calendar_instance = array();
+		$title = $calendar_attributes['title'];
+
+		$calendar_instance['title'] = $title;
 
 		if ( $calendar_attributes['client_id'] ) {
 			
 			$client_id = $calendar_attributes['client_id'];
-			$title     = $calendar_attributes['title'];
-
 			$calendar_instance = array(
 				'client_id' => $client_id,
 				'display_type' => 'producers_events',
-				'title' => '',
 			);
 		}
 
@@ -556,7 +572,11 @@ class BPTPlugin {
 			'widget_id' => 'shortcode',
 		);
 
+		ob_start();
+
 		the_widget( 'BrownPaperTickets\BPTCalendarWidget', $calendar_instance, $calendar_args );
+
+		return ob_get_clean();
 	}
 
 	public function render_bpt_options_page() {

@@ -297,8 +297,8 @@ $countries = array(
 	'Zimbabwe',
 );
 
+ob_start();
 ?>
-
 <div class="bpt-loading-<?php esc_attr_e( $post->ID );?> hidden">
 	Loading Events
 	<br />
@@ -320,7 +320,7 @@ $countries = array(
 {{ #bptEvents }}
 	{{ ^.error }}
 	<div intro="slide" class="bpt-event bpt-default-theme">
-		<h2 class="bpt-event-title">{{ title }}</h2>
+		<h2 class="bpt-event-title">{{{ unescapeHTML(title) }}}</h2>
 		
 
 		<?php if ( $_bpt_show_location_after_description === 'false' ) { ?>
@@ -478,3 +478,8 @@ $countries = array(
 	{{ /.error }}
 {{ /bptEvents }}
 </script>
+<?php
+	$event_list = ob_get_clean();
+
+	return $event_list;
+?>

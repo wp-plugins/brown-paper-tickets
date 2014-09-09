@@ -28,10 +28,10 @@ class BPTCalendarWidget extends \WP_Widget {
 
 	public function form( $instance ) {
 
-		$title        = self::get_title( $instance );
-		$display_type = self::get_display_type( $instance );
-		$client_id    = self::get_client_id( $instance );
-
+		$title           = self::get_title( $instance );
+		$display_type    = self::get_display_type( $instance );
+		$client_id       = self::get_client_id( $instance );
+		$upcoming_events = self::get_upcoming_events( $instance );
 		?>
 
 			<p>
@@ -40,13 +40,15 @@ class BPTCalendarWidget extends \WP_Widget {
 				
 				<label for="<?php esc_attr_e( $this->get_field_id( 'display_type' ) ); ?>"><?php _e( 'Display:' ); ?></label> 
 				<select class="widefat" id="<?php esc_attr_e( $this->get_field_id( 'display_type' ) ); ?>" name="<?php esc_attr_e( $this->get_field_name( 'display_type' ) ); ?>">
-					<option value="<?php esc_attr_e( 'all_events' ); ?>" <?php selected( $display_type, 'all_events' ); ?>><?php  _e( 'All Your Events' ); ?></option>
+					<option value="<?php esc_attr_e( 'all_events' ); ?>" <?php selected( $display_type, 'all_events' ); ?>><?php  _e( 'Your Events' ); ?></option>
 					<option value="<?php esc_attr_e( 'producers_events' ); ?>" <?php selected( $display_type, 'producers_event' ); ?>><?php  _e( 'Another Producer\'s Events' ); ?></option>
 				</select>
-
+				
 				<label for="<?php esc_attr_e( $this->get_field_id( 'client_id' ) ); ?>"><?php _e( 'Client ID:' ); ?></label>
 				<input class="widefat" id="<?php esc_attr_e( $this->get_field_id( 'client_id' ) ); ?>" name="<?php esc_attr_e( $this->get_field_name( 'client_id' ) ); ?>" type="text" value="<?php echo esc_attr( $client_id ); ?>">
-
+				
+				<input type="checkbox" value="true" id="<?php esc_attr_e( $this->get_field_id( 'upcoming_events' ) ); ?>_true" class="checkbox" name="<?php esc_attr_e( $this->get_field_name( 'upcoming_events' ) ); ?>" <?php esc_attr_e( ( $upcoming_events ? 'checked' : '') ); ?>>
+				<label for="<?php esc_attr_e( $this->get_field_id( 'upcoming_events' ) ); ?>_true">Display Upcoming Events?</label>
 			</p>
 		<?php
 	}
@@ -66,28 +68,46 @@ class BPTCalendarWidget extends \WP_Widget {
 
 			wp_enqueue_style( 'bpt_calendar_widget_css', plugins_url( 'public/assets/css/bpt-calendar-widget.css', dirname( __FILE__ ) ), false, VERSION );
 			wp_enqueue_script( 'ractive_transitions_fade_js', plugins_url( 'public/assets/js/ractive-transitions-fade.js', dirname( __FILE__ ) ), array(), false, true );
-			wp_enqueue_script( 'bpt_clndr_min_js', plugins_url( 'public/assets/js/clndr.min.js', dirname( __FILE__ ) ), array( 'underscore' ), false, true ); 
+			wp_enqueue_script( 'bpt_clndr_min_js', plugins_url( 'public/assets/js/clndr.min.js', dirname( __FILE__ ) ), array( 'underscore', 'jquery' ), false, true ); 
+			wp_enqueue_script( 'bpt_calendar_widget_js', plugins_url( 'public/assets/js/bpt-calendar.js', dirname( __FILE__ ) ), array( 'jquery' ), false, true );
 			
 
-			if ( $display_type === 'producers_events' ) {
-				wp_enqueue_script( 'bpt_calendar_widget_shortcode_js', plugins_url( 'public/assets/js/bpt-calendar-widget-shortcode.js', dirname( __FILE__ ) ), array( 'jquery' ), false, true );
+			if ( $widget_id === 'shortcode' ) {
+
+				// Whether or not to show a list of upcoming events if there are no events in the month.
+				// We pull this from the settings rather than set it in the shortcode.
+				$show_upcoming_events = get_option( '_bpt_show_upcoming_events_calendar' );
+
 				wp_localize_script(
-					'bpt_calendar_widget_shortcode_js', 'bptCalendarWidgetShortcodeAjax', array(
+					'bpt_calendar_widget_js', 'bptCalendarWidgetShortcodeAjax', array(
 						'ajaxurl'     => admin_url( 'admin-ajax.php' ),
 						'bptNonce'    => wp_create_nonce( 'bpt-calendar-widget-nonce' ),
 						'clientID'    => $client_id,
 						'widgetID'    => $widget_id,
+						'showUpcoming' => $show_upcoming_events,
+						'calendarContainer' => '.bpt-calendar-shortcode',
+						'eventListContainer' => '#bpt-calendar-shortcode-event-view',
 					)
 				);
 
 			} else {
+				// Whether or not to show a list of upcoming events if there are no events in the month.
+				// We pull this from the widget's instance rather than the option set.
+				$show_upcoming_events    = self::get_upcoming_events( $instance );
 
-				wp_enqueue_script( 'bpt_calendar_widget_js', plugins_url( 'public/assets/js/bpt-calendar-widget.js', dirname( __FILE__ ) ), array( 'jquery' ), false, true );
+				if ( $show_upcoming_events === '' ) {
+					$show_upcoming_events = 'false';
+				}
+
 				wp_localize_script(
 					'bpt_calendar_widget_js', 'bptCalendarWidgetAjax', array(
 						'ajaxurl'     => admin_url( 'admin-ajax.php' ),
 						'bptNonce'    => wp_create_nonce( 'bpt-calendar-widget-nonce' ),
 						'widgetID'    => $widget_id,
+						'widgetID'    => $widget_id,
+						'showUpcoming' => $show_upcoming_events,
+						'calendarContainer' => '.bpt-calendar-widget',
+						'eventListContainer' => '#bpt-calendar-widget-event-view',
 					)
 				);
 			}
@@ -95,13 +115,16 @@ class BPTCalendarWidget extends \WP_Widget {
 
 		echo wp_kses_post( $args['before_widget'] );
 
-		if ( ! empty( $title ) ) {
+		if ( isset( $title ) ) {
 			echo wp_kses_post( $args['before_title'] . $title . $args['after_title'] );
 		}
 
 		?>
-			<div class="<?php esc_attr_e( ( $widget_id === 'shortcode' ? 'bpt-calendar-widget-shortcode' : 'bpt-calendar-widget' ) ); ?>" data-bpt-widget-id="<?php esc_attr_e( $widget_id ); ?>">
+			<div class="<?php esc_attr_e( ( $widget_id === 'shortcode' ? 'bpt-calendar-shortcode' : 'bpt-calendar-widget' ) ); ?>" class="bpt-calendar-<?php esc_attr_e( $widget_id ); ?>">
 				
+			</div>
+			<div id="<?php esc_attr_e( ( $widget_id === 'shortcode' ? 'bpt-calendar-shortcode-event-view' : 'bpt-calendar-widget-event-view' ) ) ?>" class="bpt-calendar-event-list-<?php esc_attr_e( $widget_id ); ?>">
+
 			</div>
 			<script type="text/html" id="bpt-calendar-widget-calendar-template">
 				<div class="bpt-calendar-widget-controls">
@@ -141,13 +164,21 @@ class BPTCalendarWidget extends \WP_Widget {
 				</table>
 			</script>
 
-			<div id="<?php esc_attr_e( ( $widget_id === 'shortcode' ? 'bpt-calendar-widget-shortcode-event-view' : 'bpt-calendar-widget-event-view' ) ); ?>" data-bpt-widget-id="<?php esc_attr_e( $widget_id ); ?>">
-
-			</div>
 			<script type="text/html" id="bpt-calendar-widget-event-view-template">
+				{{ #date }}
+					<h1 intro="slide" outro="fade">Events on {{ formatDate( '<?php echo $date_format; ?>', date ) }}</h1>
+				{{ /date }}
+				{{ #eventsThisMonth }}
+					<h1 intro="slide" outro="fade">Events This Month</h1>
+				{{ /eventsThisMonth }}
+
+				{{ #showUpcoming}}
+					<h1 intro="slide" outro="fade">Upcoming Events</h1>
+				{{ /showUpcoming}}
+
 				{{ #currentEvents }}
 				<div class="bpt-calendar-widget-event-box" intro="slide" outro="fade">
-					<h3>{{ title }}</h3>
+					<h3>{{{ unescapeHTML(title) }}}</h3>
 					<div class="location">
 						{{ city }}, {{ state }}
 					</div>
@@ -162,15 +193,6 @@ class BPTCalendarWidget extends \WP_Widget {
 					</div>
 				</div>
 				{{ /currentEvents}}
-
-				{{ ^currentEvents }}
-
-				{{ #monthsEvents }}
-
-				{{ /monthsEvents}}
-
-				{{ /currentEvents }}
-
 			</script>
 		<?php
 
@@ -183,15 +205,15 @@ class BPTCalendarWidget extends \WP_Widget {
 		$instance['title']        = ( ! empty( $new_instance['title'] ) ) ? strip_tags( $new_instance['title'] ) : '';
 		$instance['display_type'] = ( ! empty( $new_instance['display_type'] ) ) ? strip_tags( $new_instance['display_type'] ) : '';
 		$instance['client_id']    = ( ! empty( $new_instance['client_id'] ) ) ? strip_tags( $new_instance['client_id'] ) : '';
-
+		$instance['upcoming_events']    = ( ! empty( $new_instance['upcoming_events'] ) ) ? strip_tags( $new_instance['upcoming_events'] ) : '';
 		return $instance;
 	}
 
 
 	private static function get_title( $instance ) {
-		if ( isset( $instance[ 'title' ] ) ) {
+		if ( isset( $instance['title'] ) ) {
 
-			$title = $instance[ 'title' ];
+			$title = $instance['title'];
 
 		} else {
 
@@ -205,7 +227,7 @@ class BPTCalendarWidget extends \WP_Widget {
 
 		if ( isset( $instance['display_type'] ) ) {
 
-			$display_type = $instance[ 'display_type' ];
+			$display_type = $instance['display_type'];
 
 		} else {
 
@@ -219,7 +241,7 @@ class BPTCalendarWidget extends \WP_Widget {
 	private static function get_client_id( $instance ) {
 		if ( isset( $instance['client_id'] ) ) {
 
-			$client_id = $instance[ 'client_id' ];
+			$client_id = $instance['client_id'];
 
 		} else {
 
@@ -230,7 +252,19 @@ class BPTCalendarWidget extends \WP_Widget {
 		return $client_id;
 	}
 
+	private static function get_upcoming_events( $instance ) {
+		if ( isset( $instance['upcoming_events'] ) ) {
 
+			$upcoming_events = $instance['upcoming_events'];
+
+		} else {
+
+			$upcoming_events = null;
+
+		}
+
+		return $upcoming_events;
+	}
 }
 
 class BPTEventListWidget extends \WP_Widget {

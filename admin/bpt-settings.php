@@ -21,14 +21,14 @@ $plugin_version = BPTPlugin::get_plugin_version();
 		<div class="bpt-welcome-panel-content">
 		</div>
 		<div class="bpt-welcome-panel-content">
-			<h2>Please be aware that plugin is a beta release. You will encounter errors and bugs!</h2>
+			<h2>Please be aware that this plugin is a beta release. You may encounter errors and bugs.</h2>
 			<p>
 				If you are having issues with your Client ID or your Developer ID, please email <a href="mailto:support@brownpapertickets.com">support@brownpapertickets.com</a>.
 			</p>
 
-			<p>
-				If you would like to request a new feature or if you have discovered a bug (i.e. an event is displaying when it shouldn't be), please go <a target="_blank" href="https://github.com/BrownPaperTickets/brown-paper-tickets-wordpress/issues/new">here</a></span> to open up a new issue.
-			</p>
+			<h3>
+				If you would like to request a new feature or if you have encountered a bug, please go <a target="_blank" href="https://github.com/BrownPaperTickets/brown-paper-tickets-wordpress/issues/new">here</a></span> to open up a new issue.
+			</h3>
 		</div>
 
 		<span class="bpt-welcome-info-plugin-info">Plugin Info: <?php esc_html_e( $plugin_slug . ' v' . $plugin_version ); ?> - <a class="bpt-submit-issue" target="_blank" href="https://github.com/BrownPaperTickets/brown-paper-tickets-wordpress/issues/new">Submit Bug</a></span>
@@ -39,6 +39,7 @@ $plugin_version = BPTPlugin::get_plugin_version();
 			<li><a class="bpt-admin-tab" href="#account-setup">Account Setup</a></li>
 			<li><a class="bpt-admin-tab" href="#general-settings">General Settings</a></li>
 			<li><a class="bpt-admin-tab" href="#event-settings">Event List Settings</a></li>
+			<li><a class="bpt-admin-tab" href="#calendar-settings">Calendar Settings</a></li>
 			<!-- <li><a class="bpt-admin-tab" href="#purchase-settings">Purchase Settings</a></li> -->
 			<li><a class="bpt-admin-tab" href="#help">Help</a></li>
 			<li><a class="bpt-admin-tab" href="#credits">Credits</a></li>
@@ -52,7 +53,7 @@ $plugin_version = BPTPlugin::get_plugin_version();
 			<h1>Plugin Usage</h1>
 			<p class="bpt-jumbotron">This plugin allows you to display your events within your wordpress posts or using a widget</p>
 			<h2>Shortcodes</h2>
-			<p>Simply enter one of the shortcodes and place it where you want it in a post or a page.</p>
+			<p>Simply place one of the shortcodes where you want it in a post or page.</p>
 			<table>
 				<tr>
 					<th>Action</th>
@@ -108,6 +109,12 @@ $plugin_version = BPTPlugin::get_plugin_version();
 				<input name="Submit" type="submit" class="button-primary" value="<?php esc_attr_e( 'Save Changes' ); ?>" />
 			</div>
 		</div>
+		<div id="calendar-settings">
+			<div>
+				<?php do_settings_sections( $menu_slug . '_calendar' ); ?>
+				<input name="Submit" type="submit" class="button-primary" value="<?php esc_attr_e( 'Save Changes' ); ?>" />
+			</div>
+		</div>
 		<div id="purchase-settings">
 			<div>
 			<h2>In a future release you will be able to enable sales via the plugin.</h2>
@@ -149,11 +156,10 @@ if ( ! is_ssl() ) {
 							There are a few ways to solve this:
 							<ol>
 								<li>You could wait for the cache to expire.</li>
-								<li>You could delete the cache and force the plugin to refresh the data.
-								<p>To Do that, simply go to the "General Settings" tab above and click "Delete Cache".</p>
-								</li>
+								<li>You could delete the cache and force the plugin to refresh the data.</li>
 							</ol>
 						</p>
+						<p>To delete the cache, simply go to the "General Settings" tab above and click "Delete Cache".</p>
 					</li>
 					<li>
 						<h3>I am 100% certain that my developer ID and client ID are correct. What is going on?</h3>
@@ -167,6 +173,8 @@ if ( ! is_ssl() ) {
 							<li>On the next screen, under "Add a Client" enter in your username and password, select the permissions you need and hit "Add Client Account".</li>
 							<li>Your account should now be authorized.</li>
 						</ol>
+
+						<p>If you are still having issues, send an email to <a href="mailto:support@brownpaperticekts.com">support@brownpapertickets.com</a></p>
 					</li>
 					<li>
 						<h3>My password protected prices are being displayed by the plugin, how do I prevent that?</h3>

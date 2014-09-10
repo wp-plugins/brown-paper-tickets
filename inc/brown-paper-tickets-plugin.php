@@ -548,7 +548,7 @@ class BPTPlugin {
 
 		$calendar_attributes = shortcode_atts(
 			array(
-				'client_id' => null,
+				'client_id' => '',
 				'title' => '',
 			),
 			$atts
@@ -556,7 +556,6 @@ class BPTPlugin {
 
 		$calendar_instance = array();
 		$title = $calendar_attributes['title'];
-
 		$calendar_instance['title'] = $title;
 
 		if ( $calendar_attributes['client_id'] ) {
@@ -565,6 +564,7 @@ class BPTPlugin {
 			$calendar_instance = array(
 				'client_id' => $client_id,
 				'display_type' => 'producers_events',
+				'title' => $title,
 			);
 		}
 

@@ -67,7 +67,7 @@
                 }
             },
             ready: function() {
-                console.log(calendar);
+
             }
         });
 

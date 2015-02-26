@@ -28,7 +28,9 @@ class BPTPlugin {
 	protected static $plugin_version;
 	protected static $instance = null;
 
-	protected $appearance_settings;
+	protected static $appearance_settings;
+	protected static $purchase_settings;
+	protected static $event_list_settings;
 
 	public function __construct() {
 
@@ -47,9 +49,9 @@ class BPTPlugin {
 			$this->load_admin();
 		}
 
-		$this->appearance_settings = new Modules\Appearance;
-		$this->purchase_settings = new Modules\Purchase;
-		$this->event_list_settings = new Modules\EventList;
+		self::$appearance_settings = new Modules\Appearance;
+		self::$purchase_settings = new Modules\Purchase;
+		self::$event_list_settings = new Modules\EventList;
 	}
 
 	public static function get_instance() {
@@ -82,9 +84,13 @@ class BPTPlugin {
 			self::set_default_calendar_option_values();
 			self::set_default_password_prices_values();
 
-			$this->appearance_settings->activate();
-			$this->purchase_settings->activate();
-			$this->event_list_settings->activate();
+			$appearance_settings = new Modules\Appearance;
+			$purchase_settings = new Modules\Purchase;
+			$event_list_settings = new Modules\EventList;
+			
+			$appearance_settings->activate();
+			$purchase_settings->activate();
+			$event_list_settings->activate();
 		}
 	}
 
@@ -200,7 +206,7 @@ class BPTPlugin {
 		wp_register_script( 'ractive_js', plugins_url( '/public/assets/js/lib/ractive.min.js', dirname( __FILE__ ) ), array(), false, true );
 		wp_register_script( 'ractive_transitions_slide_js', plugins_url( '/public/assets/js/lib/ractive-transitions-slide.js', dirname( __FILE__ ) ), array( 'ractive_js' ), false, true );
 		wp_register_script( 'moment_with_langs_min', plugins_url( '/public/assets/js/lib/moment-with-langs.min.js', dirname( __FILE__ ) ), array(), false, true );
-		wp_register_script( 'clndr_min_js', plugins_url( 'public/assets/js/lib/clndr.min.js', dirname( __FILE__ ) ), array( 'underscore', 'jquery' ), false, true ); 
+		wp_register_script( 'clndr_min_js', plugins_url( 'public/assets/js/lib/clndr.min.js', dirname( __FILE__ ) ), array( 'underscore', 'jquery' ), false, true );
 	}
 
 	public static function load_ajax_required() {
@@ -243,9 +249,9 @@ class BPTPlugin {
 		$this->register_bpt_calendar_settings();
 		$this->register_bpt_password_prices_settings();
 
-		$this->appearance_settings->load_settings();
-		$this->purchase_settings->load_settings();
-		$this->event_list_settings->load_settings();
+		self::$appearance_settings->load_settings();
+		self::$purchase_settings->load_settings();
+		self::$event_list_settings->load_settings();
 	}
 
 	public function bpt_show_wizard() {

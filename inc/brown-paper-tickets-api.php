@@ -2,7 +2,7 @@
 
 namespace BrownPaperTickets;
 
-require_once( plugin_dir_path( __FILE__ ).'/../lib/BptAPI/vendor/autoload.php' );
+require_once( plugin_dir_path( __FILE__ ).'../lib/BptAPI/vendor/autoload.php' );
 use BrownPaperTickets\APIv2\EventInfo;
 use BrownPaperTickets\APIv2\AccountInfo;
 /**
@@ -30,13 +30,13 @@ class BPTFeed {
 	/**
 	 * Returns a json string of a specific producers events.
 	 * @param  string  $client_id The Client ID of the producer you wish
-	 * to get the events of.
-	 * @param  boolean $dates Get prices? Default is false.
-	 * @param  boolean $prices Get Prices? Default is false.
-	 * @return json              The JSON string of the event Data.
+	 *                            to get the events of.
+	 * @param  boolean $dates     Get prices? Default is false.
+	 * @param  boolean $prices    Get Prices? Default is false.
+	 * @return json               The JSON string of the event Data.
 	 */
 	public function get_json_calendar_events( $client_id = null, $dates = true, $prices = false ) {
-		
+
 		if ( isset( $_POST['clientID'] ) &&  $_POST['clientID'] !== '' ) {
 			$client_id = $_POST['clientID'];
 		}
@@ -75,8 +75,13 @@ class BPTFeed {
 		return json_encode( $clndr_format );
 	}
 
-	/** Takes the client_id and event_id and returns events **/
-
+	/**
+	 * Get a json representation of your events based on the settings set within
+	 * Wordpress.
+	 * @param  string $client_id A comma delineated string of event Ids.
+	 * @param  string $event_id  The
+	 * @return string            Json string of events, dates and prices.
+	 */
 	public function get_json_events( $client_id = null, $event_id = null ) {
 
 		if ( ! $client_id ) {
@@ -90,15 +95,16 @@ class BPTFeed {
 
 		/**
 		 * Get Event List Setting Options
-		 * 
+		 *
 		 */
-		$_bpt_dates                = get_option( '_bpt_show_dates' );
-		$_bpt_prices               = get_option( '_bpt_show_prices' );
-		$_bpt_show_past_dates      = get_option( '_bpt_show_past_dates' );
-		$_bpt_show_sold_out_dates  = get_option( '_bpt_show_sold_out_dates' );
-		$_bpt_show_sold_out_prices = get_option( '_bpt_show_sold_out_prices' );
+		$show_dates           = get_option( '_bpt_show_dates' );
+		$show_prices          = get_option( '_bpt_show_prices' );
+		$show_past_dates      = get_option( '_bpt_show_past_dates' );
+		$show_sold_out_dates  = get_option( '_bpt_show_sold_out_dates' );
+		$show_sold_out_prices = get_option( '_bpt_show_sold_out_prices' );
 
-		$_bpt_events = new EventInfo( $this->dev_id );
+
+		$event_info = new EventInfo( $this->dev_id );
 
 		if ( $event_id ) {
 			$client_id = null;
@@ -106,44 +112,50 @@ class BPTFeed {
 			$events    = array();
 
 			foreach ( $event_id as $id ) {
-				$events[] = $_bpt_events->getEvents( $client_id, $id, $_bpt_dates, $_bpt_prices );
+				$events[] = $event_info->getEvents( $client_id, $id, $show_dates, $show_prices );
 			}
 
 			foreach ( $events as $event ) {
-				$_bpt_eventList[] = $event[0];
+				$event_list[] = $event[0];
 			}
 		}
 
 		if ( ! $event_id ) {
-			$_bpt_eventList = $_bpt_events->getEvents( $client_id, $event_id, $_bpt_dates, $_bpt_prices );
+			$event_list = $event_info->getEvents( $client_id, $event_id, $show_dates, $show_prices );
 		}
 
 
-		if ( isset( $_bpt_eventList['error'] ) ) {
-			return json_encode( $_bpt_eventList );
+		if ( isset( $event_list['error'] ) ) {
+			return json_encode( $event_list );
 		}
 
-		$_bpt_eventList = $this->remove_bad_events( $_bpt_eventList );
+		$event_list = $this->remove_bad_events( $event_list );
 
-		$_bpt_eventList = $this->sort_prices( $_bpt_eventList );
+		$event_list = $this->sort_prices( $event_list );
 
-		if ( $_bpt_dates === 'true' && $_bpt_show_past_dates === 'false' ) {
-			$_bpt_eventList = $this->remove_bad_dates( $_bpt_eventList );
+		if ( $show_dates === 'true' ) {
+
+			$remove_past = true;
+
+			if ( $show_past_dates === 'false' ) {
+				$remove_past = false;
+			}
+
+			$event_list = $this->remove_bad_dates( $event_list, true, $remove_past );
 		}
 
-		if ( $_bpt_prices === 'true ' && $_bpt_show_sold_out_prices === 'false' ) {
-			$_bpt_eventList = $this->remove_bad_prices( $_bpt_eventList );   
+		if ( $show_prices === 'true' && $show_sold_out_prices === 'false' ) {
+			$event_list = $this->remove_bad_prices( $event_list );
 		}
-		
-		return json_encode( $_bpt_eventList );
 
+		return json_encode( $event_list );
 	}
 
 	public function get_json_account() {
 
-		$_bpt_account = new AccountInfo( $this->dev_id );
+		$account_info = new AccountInfo( $this->dev_id );
 
-		return json_encode( $_bpt_account->getAccount( $this->client_id ) );
+		return json_encode( $account_info->getAccount( $this->client_id ) );
 	}
 
 
@@ -154,12 +166,12 @@ class BPTFeed {
 
 	public function bpt_setup_wizard_test( $dev_id, $client_id ) {
 
-		$_bpt_account = new AccountInfo( $dev_id );
-		$_bpt_event   = new EventInfo( $dev_id );
+		$account_info = new AccountInfo( $dev_id );
+		$event_list   = new EventInfo( $dev_id );
 
 		$response = array(
-			'account' => $_bpt_account->getAccount( $client_id ),
-			'events'  => $_bpt_event->getEvents( $client_id ),
+			'account' => $account_info->getAccount( $client_id ),
+			'events'  => $event_list->getEvents( $client_id ),
 		);
 
 		$response['events'] = $this->remove_bad_events( $response['events'] );
@@ -170,16 +182,16 @@ class BPTFeed {
 	/**
 	 * Event Methods
 	 */
-	
-	public function get_event_count() {
+	private function get_event_count() {
 		$events = new EventInfo( $this->dev_id );
 		return count( $events->getEvents( $this->client_id ) );
 	}
+
 	/**
 	 * Date Methods
-	 * 
+	 *
 	 */
-	public function date_has_past( $date ) {
+	private function date_has_past( $date ) {
 
 		if ( strtotime( $date['dateStart'] ) < time() ) {
 			return true;
@@ -187,16 +199,17 @@ class BPTFeed {
 		return false;
 	}
 
-	public function date_is_live( $date ) {
+	private function date_is_live( $date ) {
 
-		if ( $date['live'] === false ) {
+		if ( ! $date['live'] ) {
 			return false;
+		} else {
+			return true;
 		}
 
-		return true;
 	}
 
-	public function date_is_sold_out( $date ) {
+	private function date_is_sold_out( $date ) {
 
 		if ( $this->date_has_past( $date ) === true && strtotime( $date['dateStart'] ) >= time() ) {
 			return false;
@@ -209,13 +222,12 @@ class BPTFeed {
 	 * Price Methods
 	 */
 
-	public function price_is_live( $price ) {
-
-		if ( $price['live'] === false ) {
+	private function price_is_live( $price ) {
+		if ( ! $price['live'] ) {
 			return false;
+		} else {
+			return true;
 		}
-
-		return true;
 	}
 
 	/**
@@ -223,11 +235,11 @@ class BPTFeed {
 	 */
 	/**
 	 * Convert Date. Converst the Date to a human readable date.
-	 * 
+	 *
 	 * @param  string $date The String that needs to be formatted.
 	 * @return string       The formatted date string.
 	 */
-	public function convert_date( $date ) {
+	private function convert_date( $date ) {
 		return strftime( '%B %e, %Y', strtotime( $date ) );
 	}
 
@@ -236,78 +248,99 @@ class BPTFeed {
 	 * @param  string $time The string to be formated.
 	 * @return string       The formatted string.
 	 */
-	public function convert_time( $date ) {
+	private function convert_time( $date ) {
 		return strftime( '%l:%M%p', strtotime( $date ) );
 	}
 
-	protected function remove_bad_events( $_bpt_eventList ) {
-		foreach ( $_bpt_eventList as $eventIndex => $event ) {
+	private function remove_bad_events( $event_list ) {
+		foreach ( $event_list as $eventIndex => $event ) {
 
 			if ( ! $event['live'] ) {
 
-				unset( $_bpt_eventList[$eventIndex] );
+				unset( $event_list[ $eventIndex ] );
 			}
 
-			$_bpt_eventList = array_values( $_bpt_eventList );
+			$event_list = array_values( $event_list );
 		}
 
-		return $_bpt_eventList;
+		return $event_list;
 	}
 
-	protected function remove_bad_dates( $_bpt_eventList ) {
+	/**
+	 * Removes past dates and deactivated from an array of events.
+	 * @param  array   $event_list     	   An array of events with dates.
+	 * @param  boolean $remove_deactivated Pass false if you want to remove deactivated dates.
+	 * @param  boolean $remove_past        Pass false if you want to remove past dates.
+	 * @return array                       The modified event array with bad dates removed.
+	 */
+	private function remove_bad_dates( $event_list, $remove_deactivated = true, $remove_past = true ) {
 
-		foreach ( $_bpt_eventList as $eventIndex => $event ) {
+		foreach ( $event_list as $event_index => $event ) {
 
-			foreach ( $event['dates'] as $dateIndex => $date ) {
-				
-				if ( $this->date_has_past( $date ) || ! $this->date_is_live( $date ) ) {
+			if ( ! isset($event['dates'] ) ) {
+				continue;
+			}
 
-					unset( $event['dates'][$dateIndex] );
+			foreach ( $event['dates'] as $date_index => $date ) {
+
+				$remove_date = false;
+
+				if ( $remove_past && $this->date_has_past( $date ) ) {
+					$remove_date = true;
+				}
+
+				if ( $remove_deactivated && ! $this->date_is_live( $date ) ) {
+					$remove_date = true;
+				}
+
+				if ( $remove_date ) {
+					unset( $event['dates'][ $date_index ] );
 				}
 			}
 
 			$event['dates'] = array_values( $event['dates'] );
 
-			$_bpt_eventList[$eventIndex] = $event;
+			$event_list[ $event_index ] = $event;
 		}
 
-		return $_bpt_eventList;
+		return $event_list;
 	}
 
-	protected function remove_bad_prices( $_bpt_eventList ) {
-		foreach ( $eventList as $eventIndex => $event ) {
+	private function remove_bad_prices( $event_list ) {
+		foreach ( $event_list as $event_index => $event ) {
 
-			foreach ( $event['dates'] as $dateIndex => $date ) {
-				
+			foreach ( $event['dates'] as $date_index => $date ) {
+
 				foreach ( $date['prices'] as $priceIndex => $price ) {
 
 					if ( $this->price_is_live( $price ) === false ) {
-						unset( $date['prices'][$priceIndex] );
+						unset( $date['prices'][ $priceIndex ] );
 					}
 				}
-				
+
 				$date['prices'] = array_values( $date['prices'] );
 
-				$event['dates'][$dateIndex] = $date;
+				$event['dates'][ $date_index ] = $date;
 			}
 
-			$_bpt_eventList[$eventIndex] = $event;
+			$event_list[ $event_index ] = $event;
 		}
 
-		return $_bpt_eventList;
+		return $event_list;
 	}
 
-	protected function sort_prices( $_bpt_eventList ) {
+
+	private function sort_prices( $event_list ) {
 		$sort_method = get_option( '_bpt_price_sort' );
 
-		foreach ( $_bpt_eventList as $eventIndex => $event ) {
+		foreach ( $event_list as $event_index => $event ) {
 
-			foreach ( $event['dates'] as $dateIndex => $date ) {
-				
+			foreach ( $event['dates'] as $date_index => $date ) {
+
 				if ( $sort_method === 'alpha_asc' ) {
 					$date['prices'] = $this->sort_by_key( $date['prices'], 'name', true );
 				}
-				
+
 				if ( $sort_method === 'alpha_desc' ) {
 					$date['prices'] = $this->sort_by_key( $date['prices'], 'name' );
 				}
@@ -320,16 +353,16 @@ class BPTFeed {
 					$date['prices'] = $this->sort_by_key( $date['prices'], 'value' );
 				}
 
-				$event['dates'][$dateIndex] = $date;
+				$event['dates'][ $date_index ] = $date;
 			}
 
-			$_bpt_eventList[$eventIndex] = $event;
+			$event_list[ $event_index ] = $event;
 		}
 
-		return $_bpt_eventList;
+		return $event_list;
 	}
 
-	protected function sort_by_key( $array, $key, $reverse = false ) {
+	private function sort_by_key( $array, $key, $reverse = false ) {
 
 		//Loop through and get the values of our specified key
 		foreach ( $array as $k => $v ) {
@@ -345,7 +378,7 @@ class BPTFeed {
 			arsort( $b );
 
 		}
-		
+
 		foreach ( $b as $k => $v ) {
 			$c[] = $array[$k];
 		}

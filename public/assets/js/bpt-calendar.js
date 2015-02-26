@@ -21,7 +21,7 @@
         this.currentEvents = currentEvents;
 
         /**
-         * This is the Ractive Template that displays the 
+         * This is the Ractive Template that displays the
          * event details.
          */
         eventList = new Ractive({
@@ -102,7 +102,7 @@
 
             });
         };
-        
+
         setEvents = function(events) {
 
             bptCalendar.events = events;
@@ -112,7 +112,7 @@
 
         displayEvents = function(target) {
             var dayEvents = [];
-            
+
             if (target && target.element) {
                 var container = document.querySelector(calendarContainer);
                 var previousSelected =container.querySelectorAll('.bpt-calendar-selected-day');
@@ -177,19 +177,21 @@
     };
 
     $(document).ready(function() {
+        var bptCalendarWidgetShortcodeAjax = window.bptCalendarWidgetShortcodeAjax,
+            bptCalendarWidgetAjax = window.bptCalendarWidgetAjax;
 
         if (bptCalendarWidgetShortcodeAjax) {
 
             var bptCalendarShortcode = new BptCalendar(bptCalendarWidgetShortcodeAjax);
-            
+
             bptCalendarShortcode.getEvents();
 
         }
 
         if (bptCalendarWidgetAjax) {
-            
+
             var bptCalendarWidget = new BptCalendar(bptCalendarWidgetAjax);
-            
+
             bptCalendarWidget.getEvents();
         }
     });

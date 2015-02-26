@@ -5,7 +5,8 @@
         customDateFormat,
         customTimeFormat,
         bptWelcomePanel,
-        bptAPI;
+        bptAPI,
+        appearanceTab;
 
     navigation = {
         loadTab: function loadTab() {
@@ -49,7 +50,7 @@
             var tabs = [];
 
             $('#brown_paper_tickets_settings ul li').each(function() {
-               tabs.push($(this).children('a').attr('href')); 
+               tabs.push($(this).children('a').attr('href'));
             });
 
             return tabs;
@@ -59,10 +60,104 @@
             if (tab === this.getAnchor()) {
                 return;
             }
-            
+
             document.location.replace(tab);
 
         }
+    };
+
+    appearanceTab = function() {
+        var calendarHelp = $('#bpt-appearance-help-calendar'),
+            eventListHelp = $('#bpt-appearance-help-event-list'),
+            calendarCSS = $('#bpt-calendar-css'),
+            eventListCSS = $('#bpt-event-list-css'),
+            bindings,
+            init,
+            showCSSBox;
+
+        bindings = function() {
+            $('#bpt-appearance-show-event-list-help').click(function(event) {
+                event.preventDefault();
+
+                eventListHelp.toggle(function(showOrHide) {
+
+                    if (showOrHide) {
+                        eventListHelp.slideDown();
+                    }
+                });
+            });
+
+            $('#bpt-appearance-show-calendar-help').click(function(event) {
+                event.preventDefault();
+
+                calendarHelp.toggle(function(showOrHide) {
+
+                    if (showOrHide) {
+                        calendarHelp.slideDown();
+                    }
+                });
+            });
+
+            $('#bpt-event-list-use-style').click(function(event) {
+                showCSSBox(event);
+            });
+
+            $('#bpt-calendar-use-style').click(function(event) {
+                showCSSBox(event, true);
+            });
+        };
+
+        showCSSBox = function(event, calendar) {
+            if (!event) {
+                var eventListUseStyle = $('#bpt-event-list-use-style'),
+                    calendarUseStyle = $('#bpt-calendar-use-style');
+
+                if (!eventListUseStyle.prop('checked')) {
+                    eventListCSS.hide();
+                }
+
+                if (!calendarUseStyle.prop('checked')) {
+                    calendarCSS.hide();
+                }
+
+                return;
+            }
+
+            if (calendar) {
+
+                if (event.target.checked) {
+
+                    calendarCSS.show();
+
+                } else {
+
+                    calendarCSS.hide();
+
+                }
+
+            } else {
+
+                if (event.target.checked) {
+
+                    eventListCSS.show();
+
+                } else {
+
+                    eventListCSS.hide();
+
+                }
+
+            }
+        };
+
+        init = function() {
+            calendarHelp.hide();
+            eventListHelp.hide();
+            showCSSBox();
+            bindings();
+        };
+
+        init();
     };
 
     customDateFormat = function() {
@@ -134,7 +229,7 @@
             )
             .always(function() {
                 $('.bpt-loading').hide();
-                
+
             }).done(function(data) {
 
                 $('.bpt-loading').hide();
@@ -158,15 +253,42 @@
                 .delay(2000)
                 .fadeOut(500);
             });
+        },
+        unhidePrice: function unhidePrice(event) {
+            var priceLink = $(event.target),
+                price = {
+                    priceId: priceLink.data('price-id')
+                };
+
+            $.ajax(
+                bptWP.ajaxurl,
+                {
+                    type: 'POST',
+                    data: {
+                        action: 'bpt_unhide_prices',
+                        bptNonce: bptWP.bptNonce,
+                        admin: true,
+                        prices: [price]
+                    },
+                    accepts: 'json',
+                    dataType: 'json'
+                }
+            )
+            .always(function() {
+
+            })
+            .done(function(data) {
+                if (data.success) {
+                    priceLink.parent().parent().fadeOut();
+                }
+            })
+            .fail(function(data) {
+
+            });
         }
     };
 
-
-
     $(document).ready(function() {
-
-
-
         navigation.switchTabs(navigation.getAnchor());
 
         $('a.bpt-admin-tab').click(function(e) {
@@ -174,7 +296,6 @@
             var tab = $(this).attr('href');
             navigation.switchTabs(tab);
         });
-
 
         customDateFormat();
         customTimeFormat();
@@ -199,6 +320,11 @@
             bptAPI.deleteCache();
         });
 
+        $('a.bpt-unhide-price').click(function(event) {
+            event.preventDefault();
+            bptAPI.unhidePrice(event);
+        });
+
         bptWelcomePanel = new Ractive({
             el: '.bpt-welcome-panel-content',
             template: '#bpt-welcome-panel-template',
@@ -207,5 +333,6 @@
 
         bptAPI.getAccount();
 
+        appearanceTab();
     });
 })(jQuery);

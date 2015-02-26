@@ -64,12 +64,8 @@ class BPTCalendarWidget extends \WP_Widget {
 
 		if ( is_active_widget( false, false, $this->id_base, true ) || $args['widget_id'] === 'shortcode' ) {
 
-			BPTPlugin::load_ajax_required();
-
 			wp_enqueue_style( 'bpt_calendar_widget_css', plugins_url( 'public/assets/css/bpt-calendar-widget.css', dirname( __FILE__ ) ), false, VERSION );
-			wp_enqueue_script( 'ractive_transitions_fade_js', plugins_url( 'public/assets/js/ractive-transitions-fade.js', dirname( __FILE__ ) ), array(), false, true );
-			wp_enqueue_script( 'bpt_clndr_min_js', plugins_url( 'public/assets/js/clndr.min.js', dirname( __FILE__ ) ), array( 'underscore', 'jquery' ), false, true ); 
-			wp_enqueue_script( 'bpt_calendar_widget_js', plugins_url( 'public/assets/js/bpt-calendar.js', dirname( __FILE__ ) ), array( 'jquery' ), false, true );
+			wp_enqueue_script( 'bpt_calendar_widget_js', plugins_url( 'public/assets/js/bpt-calendar.js', dirname( __FILE__ ) ), array( 'jquery', 'ractive_js', 'ractive_transitions_slide_js', 'moment_with_langs_min', 'clndr_min_js' ), false, true );
 			
 
 			if ( $widget_id === 'shortcode' ) {
@@ -119,6 +115,27 @@ class BPTCalendarWidget extends \WP_Widget {
 			echo wp_kses_post( $args['before_title'] . $title . $args['after_title'] );
 		}
 
+		$calendar_style = get_option( '_bpt_calendar_style' );
+
+		if ( $calendar_style ) {
+			$use_style = ( isset( $calendar_style['use_style'] ) ? true : false );
+
+			if ( $use_style ) {
+				$css = '<style type="text/css">' . esc_html( $calendar_style['custom_css'] ) . '</style>';
+
+			}
+
+			if ( isset( $css ) ) {
+				$allowed_html = array(
+					'style' => array(
+						'type' => array(),
+					),
+				);
+
+				echo wp_kses( $css, $allowed_html );
+			}
+		}
+
 		?>
 			<div class="<?php esc_attr_e( ( $widget_id === 'shortcode' ? 'bpt-calendar-shortcode' : 'bpt-calendar-widget' ) ); ?>" class="bpt-calendar-<?php esc_attr_e( $widget_id ); ?>">
 				
@@ -142,7 +159,7 @@ class BPTCalendarWidget extends \WP_Widget {
 				    <thead>
 				        <tr class="bpt-calendar-widget-header-days">
 				            <% for(var i = 0; i < daysOfTheWeek.length; i++ ) { %>
-				            <td class="header-day">
+				            <td class="bpt-calendar-widget-header-day">
 				            	<%= daysOfTheWeek[i] %>
 				            </td>
 				            <% } %>
@@ -164,7 +181,7 @@ class BPTCalendarWidget extends \WP_Widget {
 				</table>
 			</script>
 
-			<script type="text/html" id="bpt-calendar-widget-event-view-template">
+			<script type="text/html" id="bpt-calendar-widget-event-view-template" class="bpt-calendar-widget-event-view">
 				{{ #date }}
 					<h1 intro="slide" outro="fade">Events on {{ formatDate( '<?php echo $date_format; ?>', date ) }}</h1>
 				{{ /date }}
@@ -177,18 +194,18 @@ class BPTCalendarWidget extends \WP_Widget {
 				{{ /showUpcoming}}
 
 				{{ #currentEvents }}
-				<div class="bpt-calendar-widget-event-box" intro="slide" outro="fade">
-					<h3>{{{ unescapeHTML(title) }}}</h3>
-					<div class="location">
+				<div class="bpt-calendar-widget-event-view-event" intro="slide" outro="fade">
+					<h2>{{{ unescapeHTML(title) }}}</h2>
+					<div class="bpt-calendar-widget-event-view-location">
 						{{ city }}, {{ state }}
 					</div>
-					<div class="date">
+					<div class="bpt-calendar-widget-event-view-date">
 						{{ formatDate( '<?php echo $date_format; ?>', date ) }}
 					</div>
-					<div class="description">
+					<div class="bpt-calendar-widget-event-view-description">
 						{{ shortDescription }}
 					</div>
-					<div class="buy-tickets">
+					<div class="bpt-calendar-widget-event-view-buy-tickets">
 						<a href="http://www.brownpapertickets.com/event/{{ eventID }}?date={{ dateID }}" target="_blank">Buy Tickets</a>
 					</div>
 				</div>

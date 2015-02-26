@@ -61,15 +61,15 @@
         color: #000;
         width: 100%;
     }
-    .bpt-calendar-shortcode  .header-day,
-    .bpt-calendar-widget .header-day {
+    .bpt-calendar-shortcode  .bpt-calendar-widget-header-day,
+    .bpt-calendar-widget .bpt-calendar-widget-header-day {
         font-weight: bold;
         text-align: center;
         background: #ECEDED;
         border-right: 1px solid #D1D2D4;
     }
-    .bpt-calendar-shortcode .header-day:last-child,
-    .bpt-calendar-widget .header-day:last-child {
+    .bpt-calendar-shortcode .bpt-calendar-widget-header-day:last-child,
+    .bpt-calendar-widget .bpt-calendar-widget-header-day:last-child {
         border-right: 0;
     }
 
@@ -123,11 +123,10 @@
  * Event Display Formatting
  */
 
-.bpt-calendar-widget-event-box {
+.bpt-calendar-widget-event-view-event-container {
     margin-bottom: 10px;
 }
 
-    .bpt-calendar-shortcode .buy-tickets,
-    .bpt-calendar-widget .buy-tickets {
+    .bpt-calendar-widget-event-view-buy-tickets {
         color: inherit;
     }

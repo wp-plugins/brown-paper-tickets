@@ -15,15 +15,14 @@
  * Plugin Name:       Brown Paper Tickets
  * Plugin URI:        http://www.brownpapertickets.com
  * Description:       Display your Brown Paper Tickets events using convenient shortcodes and widgets.
- * Version:           0.1.31
+ * Version:           0.3.0
  * Author:            Brown Paper Tickets
  * Author URI:        http://www.brownpapertickets.com
  * Text Domain:       brown-paper-tickets-locale
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
- * Domain Path:       /languages	
+ * Domain Path:       /languages
  */
-
 
 require_once( plugin_dir_path( __FILE__ ).'inc/brown-paper-tickets-plugin.php' );
 
@@ -32,9 +31,7 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-
 register_activation_hook( __FILE__, array( 'BrownPaperTickets\BPTPlugin', 'activate' ) );
 register_deactivation_hook( __FILE__, array( 'BrownPaperTickets\BPTPlugin', 'deactivate' ) );
 
 add_action( 'plugins_loaded', array( 'BrownPaperTickets\BPTPlugin', 'get_instance' ) );
-

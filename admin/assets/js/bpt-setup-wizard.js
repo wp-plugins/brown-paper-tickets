@@ -240,8 +240,7 @@
                     if (type === 'account') {
 
                         if ( errorCode === '100003' ) {
-                            return 'It looks like that Client ID is not authorized to access protected ' + 
-                            'information using the Developer ID you have entered.';
+                            return 'It looks like the Developer ID provided is not authorized to access that Client ID.';
                         }
 
                         if (this.data.eventError.code === '100003') {

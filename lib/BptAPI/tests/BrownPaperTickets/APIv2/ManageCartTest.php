@@ -16,16 +16,25 @@ class BrownPaperTicketsSubmitOrderTest extends \PHPUnit_Framework_TestCase
 
     public function __construct()
     {
-        $this->bpt = new ManageCart('p9ny29gi5h');
-        $this->cartID = $this->bpt->getCartID();
+        $this->bpt = new ManageCart(getenv('DEVID'));
     }
 
-    public function testGetCartID()
+    public function testGetCartId()
     {
-        $this->assertInternalType('string', $this->cartID);
+        $this->assertInternalType('null', $this->bpt->getCartID());
+        $this->assertInternalType('null', $this->bpt->getCartCreatedAt());
+
+        $initCart = $this->bpt->initCart();
+
+        $this->assertInternalType('string', $this->bpt->getCartID());
+        $this->assertInternalType('integer', $this->bpt->getCartCreatedAt());
+
+        $this->assertInternalType('array', $initCart);
+        $this->assertArrayHasKey('cartID', $initCart);
+        $this->assertArrayHasKey('cartCreatedAt', $initCart);
     }
 
-    public function testPurchaseTickets()
+    public function testSetPricesAndRequirements()
     {
         $prices = array(
             20276327 => array(
@@ -35,115 +44,376 @@ class BrownPaperTicketsSubmitOrderTest extends \PHPUnit_Framework_TestCase
             2327400 => array(
                 'quantity' => 3,
                 'shippingMethod' => 3
+            ),
+            3424565 => array(
+                'quantity' => 1,
+                'shippingMethod' => 5
+            ),
+        );
+
+        $actualPrices = array(
+            20276327 => array(
+                'quantity' => 1,
+                'shippingMethod' => 2
+            ),
+            2327400 => array(
+                'quantity' => 3,
+                'shippingMethod' => 3
+            ),
+        );
+
+        $this->bpt->setPrices($prices);
+
+        $prices = $this->bpt->getPrices();
+
+        $this->assertEquals($actualPrices, $this->bpt->getPrices());
+
+        $this->assertTrue($this->bpt->getRequireWillCallNames());
+    }
+
+
+    public function testSendPricesAndRequirements()
+    {
+        $prices = array(
+            20276327 => array(
+                'quantity' => 1,
+                'shippingMethod' => 2
+            ),
+            3424571 => array(
+                'quantity' => 3,
+                'shippingMethod' => 3
             )
         );
 
-        $params = array(
-            'cartID' => $this->cartID,
-            'prices' => $prices,
+        $actualPrices = array(
+            3424571 => array(
+                'quantity' => 3,
+                'shippingMethod' => 3
+            )
         );
 
-        $addPrices = $this->bpt->addPricestoCart($params);
+        $this->bpt->setPrices($prices);
+        $this->assertEquals($prices, $this->bpt->getPrices());
 
-        // Test that the Cart ID is a value of $addPrices
-        // and has this instance's cart ID set.
-        $this->assertArrayHasKey('cartID', $addPrices);
-        $this->assertContains($this->cartID, $addPrices['cartID']);
+        $results = $this->bpt->sendPrices();
+        $this->assertFalse($results['success']);
 
-        // Test that the pricesAdded array has one element.
-        $this->assertArrayHasKey('pricesAdded', $addPrices);
-        $this->assertCount(1, $addPrices['pricesAdded']);
-        $pricesAdded = $addPrices['pricesAdded'][0];
+        $this->bpt->initCart();
+        $results = $this->bpt->sendPrices();
 
-        // Test that result key exists and hasa value of 'success'
-        $this->assertArrayHasKey('result', $pricesAdded);
-        $this->assertEquals('success', $pricesAdded['result']);
+        $this->assertTrue($results['success']);
+        $this->assertEquals($actualPrices, $this->bpt->getPrices());
+        $this->assertEquals(36, $this->bpt->GetValue());
+        $this->assertArrayHasKey(20276327, $this->bpt->getPricesNotAdded());
 
-        // Test that Ticket 2327400 has been added.
-        $this->assertArrayHasKey('priceID', $pricesAdded);
-        $this->assertEquals('2327400', $pricesAdded['priceID']);
+        $this->assertTrue($this->bpt->getRequireWillCallNames());
+        $this->assertTrue($this->bpt->getRequireFullBilling());
+    }
 
-        // Test that the status key exists and is set to 'Price has
-        // been added'.
-        $this->assertArrayHasKey('status', $pricesAdded);
-        $this->assertEquals('Price has been added.', $pricesAdded['status']);
+    public function testRemovePrices()
+    {
+        $prices = array(
+            3424567 => array(
+                'quantity' => 1,
+                'shippingMethod' => 2
+            ),
+            3424571 => array(
+                'quantity' => 3,
+                'shippingMethod' => 3
+            )
+        );
+        $this->bpt->initCart();
+        $this->bpt->setPrices($prices);
+        $results = $this->bpt->sendPrices();
 
-
-        // Test that some prices failed.
-        $this->assertArrayHasKey('pricesNotAdded', $addPrices);
-        $this->assertCount(1, $addPrices['pricesNotAdded']);
-        $pricesNotAdded = $addPrices['pricesNotAdded'][0];
-
-        $this->assertArrayHasKey('result', $pricesNotAdded);
-        $this->assertEquals('fail', $pricesNotAdded['result']);
-
-        $this->assertArrayHasKey('status', $pricesNotAdded);
-        $this->assertEquals('no such price', $pricesNotAdded['status']);
-
-        $this->assertArrayHasKey('priceID', $pricesNotAdded);
-        $this->assertEquals('20276327', $pricesNotAdded['priceID']);
-
-
-        // Test that the cartValue element exists and it set to '0.00'
-        $this->assertArrayHasKey('cartValue', $addPrices);
-        $this->assertEquals('0.00', $addPrices['cartValue']);
-
-        $params = array(
-            'cartID' => $this->cartID,
-            'shippingFirstName' => 'Chandler',
-            'shippingLastName' => 'Blum',
-            'shippingAddress' => '124 PHP',
-            'shippingCity' => 'Seattle',
-            'shippingState' => 'WA',
-            'shippingZip' => '98107',
-            'shippingCountry' => 'US'
+        $actualPrices = array(
+            3424571 => array(
+                'quantity' => 3,
+                'shippingMethod' => 3
+            )
         );
 
-        $shippingInfo = $this->bpt->addShippingInfoToCart($params);
+        $this->assertEquals($actualPrices, $this->bpt->getPrices());
 
-        $this->assertArrayHasKey('result', $shippingInfo);
-        $this->assertArrayHasKey('message', $shippingInfo);
-        $this->assertArrayHasKey('cartID', $shippingInfo);
+        $this->assertEquals(36, $this->bpt->getValue());
+        $this->bpt->removePrices(array(3424571));
 
-        $this->assertEquals('success', $shippingInfo['result']);
-        $this->assertEquals('Shipping method has been added.', $shippingInfo['message']);
-        $this->assertContains($this->cartID, $shippingInfo['cartID']);
-
-        $params = array(
-            'cartID' => $this->cartID,
-            'ccType' => 'Visa',
-            'ccNumber' => 1234567890000000,
-            'ccExpMonth' => 10,
-            'ccExpYear' => 2016,
-            'ccCvv2' => 123,
-            'billingFirstName' => 'Chandler',
-            'billingLastName' => 'Blum',
-            'billingAddress' => '5810 8th Ave NW',
-            'billingCity' => 'Seattle',
-            'billingState' => 'WA',
-            'billingZip' => 98107,
-            'billingCountry' => 'United States',
-            'email' => 'chandlerblum@gmail.com',
-            'phone' => 9784176259
+        $actualPrices = array(
+            3424571 => array(
+                'quantity' => 0,
+                'shippingMethod' => 3,
+            )
         );
 
-        $billingInfo = $this->bpt->addBillingInfoToCart($params);
+        $this->assertEquals($actualPrices, $this->bpt->getPrices());
+        $results = $this->bpt->sendPrices();
+        $removed = $this->bpt->getPricesRemoved();
+        $this->assertEquals(3424571, $removed[0]);
+        $this->assertEquals(array(), $this->bpt->getPrices());
+        $this->assertEquals(0, $this->bpt->getValue());
 
-        $this->assertArrayHasKey('result', $billingInfo);
-        $this->assertEquals('success', $billingInfo['result']);
-        $this->assertArrayHasKey('message', $billingInfo);
-        $this->assertEquals('Purchase complete.', $billingInfo['message']);
-        $this->assertArrayHasKey('cartID', $billingInfo);
+        $this->assertEquals(array(), $this->bpt->getPrices());
+    }
+
+    public function testSetShipping()
+    {
+        $prices = array(
+            3424567 => array(
+                'quantity' => 1,
+                'shippingMethod' => 2
+            ),
+            3424571 => array(
+                'quantity' => 3,
+                'shippingMethod' => 3
+            )
+        );
+
+        $this->bpt->initCart();
+        $this->bpt->setPrices($prices);
+        $this->bpt->sendPrices();
+
+        $incomplete = array(
+            'firstName' => 'API',
+            'lastName' => 'Test'
+        );
+
+        $this->assertFalse($this->bpt->setShipping($incomplete));
+
+        $willCall = array(
+            'firstName' => 'API',
+            'lastName' => 'Test',
+            'address' => '123 Street',
+            'city' => 'Seattle',
+            'state' => 'WA',
+            'zip' => '98122',
+            'country' => 'US'
+        );
+        $this->assertInternalType('array', $this->bpt->setShipping($willCall));
+
+        $willCall['willCallFirstName'] = 'API';
+        $willCall['willCallLastName'] = 'Test';
+
+        $this->assertEquals($willCall, $this->bpt->getShipping());
+
+        $willCall['willCallFirstName'] = 'Ticket';
+        $willCall['willCallLastName'] = 'Pickup';
+
+        $true = $this->bpt->setShipping($willCall);
+
+        $this->assertTrue($true['success']);
+        $this->assertEquals($willCall, $this->bpt->getShipping());
+    }
+
+    public function testSendShipping()
+    {
+        $prices = array(
+            3424567 => array(
+                'quantity' => 1,
+                'shippingMethod' => 2
+            ),
+            3424571 => array(
+                'quantity' => 3,
+                'shippingMethod' => 3
+            )
+        );
+
+        $false = $this->bpt->sendShipping();
+
+        $this->assertFalse($false['success']);
+        $this->assertEquals('Invalid cart.', $false['message']);
+
+        $this->bpt->initCart();
+        $false = $this->bpt->sendShipping();
+        $this->assertFalse($false['success']);
+        $this->assertEquals('No tickets.', $false['message']);
+
+        $this->bpt->setPrices($prices);
+        $this->bpt->sendPrices();
+
+        $shipping = array(
+            'firstName' => 'API',
+            'lastName' => 'Test',
+            'address' => '123 Street',
+            'city' => 'Seattle',
+            'state' => 'WA',
+            'zip' => '98122',
+            'country' => 'US',
+            'willCallFirstName' => 'Ticket',
+            'willCallLastName' => 'Pickup'
+        );
+
+        $this->assertInternalType('array', $this->bpt->setShipping($shipping));
+        $this->assertTrue($this->bpt->sendShipping());
+    }
+
+    public function testSetBilling()
+    {
+        $incompleteBilling = array(
+            'firstName' => 'API'
+        );
+
+        $billing = array(
+            'number' => '1234567890000000',
+            'expMonth' => 10,
+            'expYear' => 2018,
+            'cvv2' => 666,
+            'firstName' => 'API',
+            'lastName' => 'Test',
+            'address' => '123 Street',
+            'city' => 'Seattle',
+            'state' => 'WA',
+            'zip' => '98122',
+            'country' => 'US',
+            'willCallFirstName' => 'Ticket',
+            'willCallLastName' => 'Pickup'
+        );
+
+        $prices = array(
+            3424567 => array(
+                'quantity' => 1,
+                'shippingMethod' => 2
+            ),
+            3424571 => array(
+                'quantity' => 3,
+                'shippingMethod' => 3
+            )
+        );
+
+        $false = $this->bpt->setBilling($incompleteBilling);
+        $this->assertFalse($false['success']);
+        $this->assertEquals('First and last name are required.', $false['message']);
+
+        $this->bpt->setPrices($prices);
+        $this->bpt->initCart();
+        $this->bpt->sendPrices();
+
+        $this->assertTrue($this->bpt->getRequireFullBilling());
+
+        $false = $this->bpt->setBilling($billing);
+
+        $this->assertFalse($false['success']);
+        $this->assertEquals('Email and telephone are required.', $false['message']);
+
+        $billing['email'] = 'someone@somewhere.com';
+        $billing['phone'] = '800.838.3006';
+        $false = $this->bpt->setBilling($billing);
+
+        $this->assertFalse($false['success']);
+        $this->assertEquals('Credit card info is required.', $false['message']);
+
+        $billing['type'] = 'BITCOINZZZZ';
+        $false = $this->bpt->setBilling($billing);
+
+        $this->assertEquals('Type must be Visa, Mastercard, Discover or Amex.', $false['message']);
+
+        $billing['type'] = 'Visa';
+        $true = $this->bpt->setBilling($billing);
+
+        $this->assertEquals('Billing info set.', $true['message']);
+        $this->assertTrue($true['success']);
 
     }
 
-    // public function testSubmitOrderStage3()
-    // {
-    //     $bpt = $this->bptAPI;
+    public function testSendBilling()
+    {
+        $prices = array(
+            3424567 => array(
+                'quantity' => 1,
+                'shippingMethod' => 2
+            ),
+            3424571 => array(
+                'quantity' => 3,
+                'shippingMethod' => 3
+            )
+        );
 
-    //     $orderParams = array(
-    //         'cartID' => $this->cartID,
-    //         ''
-    //     );
-    // }
+        $shipping = array(
+            'firstName' => 'API',
+            'lastName' => 'Test',
+            'address' => '123 Street',
+            'city' => 'Seattle',
+            'state' => 'WA',
+            'zip' => '98122',
+            'country' => 'US',
+            'willCallFirstName' => 'Ticket',
+            'willCallLastName' => 'Pickup'
+        );
+
+        $billing = array(
+            'type' => 'Visa',
+            'number' => '1234567890000000',
+            'expMonth' => 10,
+            'expYear' => 2018,
+            'cvv2' => 666,
+            'firstName' => 'API',
+            'lastName' => 'Test',
+            'address' => '123 Street',
+            'city' => 'Seattle',
+            'state' => 'WA',
+            'zip' => '98122',
+            'country' => 'US',
+            'email' => 'someone@somewhere.com',
+            'phone' => '800.838.3006',
+            'willCallFirstName' => 'Ticket',
+            'willCallLastName' => 'Pickup'
+        );
+
+        $noCart = $this->bpt->sendBilling();
+        $this->assertFalse($noCart['success']);
+        $this->assertEquals('Invalid cart.', $noCart['message']);
+
+        $this->bpt->initCart();
+        $noPrices = $this->bpt->sendBilling();
+        $this->assertFalse($noPrices['success']);
+        $this->assertEquals('No prices set.', $noPrices['message']);
+
+        $this->bpt->setPrices($prices);
+        $noPricesSent = $this->bpt->sendBilling();
+        $this->assertFalse($noPricesSent['success']);
+        $this->assertEquals('Prices have not been sent.', $noPricesSent['message']);
+        $this->bpt->sendPrices();
+
+        $noShipping = $this->bpt->sendBilling();
+        $this->assertFalse($noShipping['success']);
+        $this->assertEquals('No shipping info set.', $noShipping['message']);
+        $this->bpt->setShipping($shipping);
+
+        $noShippingSent = $this->bpt->sendBilling();
+        $this->assertFalse($noShippingSent['success']);
+        $this->assertEquals('Shipping info has not been sent.', $noShippingSent['message']);
+        $this->bpt->sendShipping();
+
+        $noBilling = $this->bpt->sendBilling();
+        $this->assertFalse($noBilling['success']);
+        $this->assertEquals('No billing info set.', $noBilling['message']);
+
+        $setBilling = $this->bpt->setBilling($billing);
+
+        $success = $this->bpt->sendBilling();
+
+        $this->assertTrue($success['success']);
+        $this->assertEquals('Purchase complete.', $success['message']);
+
+        $alreadySent = $this->bpt->sendBilling();
+        $this->assertFalse($alreadySent['success']);
+        $this->assertEquals('Billing info has already been sent.', $alreadySent['message']);
+
+        $receipt = $this->bpt->getReceipt();
+        $this->assertInternalType('array', $receipt);
+        $this->assertArrayNotHasKey('success', $receipt);
+        $this->assertArrayNotHasKey('message', $receipt);
+        $this->assertArrayHasKey('ticketURL', $receipt);
+        $this->assertArrayHasKey('receiptURL', $receipt);
+        $this->assertArrayHasKey('total', $receipt);
+        $this->assertArrayHasKey('cartID', $receipt);
+    }
+
+    public function testPassCartID()
+    {
+        $fail = $this->bpt->initCart('z6UDpmZQbAzzrQRk6f5wzi4TH', 1422474020);
+
+        $this->assertInternalType('array', $fail);
+        $this->assertFalse($fail['success']);
+        $this->assertEquals('Cart has expired.', $fail['message']);
+    }
 }

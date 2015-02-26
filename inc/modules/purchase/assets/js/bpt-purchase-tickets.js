@@ -87,7 +87,6 @@
                     cartValue: data.cartValue
                 });
 
-
                 if (data.message) {
                     var messageDiv = $('#bpt-shopping-cart-message');
 
@@ -97,6 +96,8 @@
                         messageDiv.fadeOut();
                     }, 5000);
                 }
+
+                
             })
             .always(function(data) {
                 shoppingCart.set('loading', false);

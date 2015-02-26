@@ -5,9 +5,10 @@
 
 namespace BrownPaperTickets;
 
-const VERSION = '0.3.0';
+const VERSION = '0.3.1';
 
 const PLUGIN_SLUG = 'brown_paper_tickets';
+
 
 require_once( plugin_dir_path( __FILE__ ).'../inc/brown-paper-tickets-settings-fields.php' );
 require_once( plugin_dir_path( __FILE__ ).'../inc/brown-paper-tickets-ajax.php' );

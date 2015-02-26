@@ -4,7 +4,7 @@ Donate Link: N/A
 Tags: bpt, brown paper tickets
 Requires at least: 3.6
 Tested up to: 4.1.1
-Stable tag: 0.3.0
+Stable tag: 0.3.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -24,7 +24,7 @@ It's source code can be found on [Github](https://github.com/BrownPaperTickets/b
 
 **Please use the [Issues](https://github.com/BrownPaperTickets/brown-paper-tickets-wordpress/issues/new) page to submit bugs, feature requests, etc.**
 
-== Installation == 
+== Installation ==
 
 To install the plugin, download the zip, extract it and upload the extracted folder to your plugins directory on your webserver.
 
@@ -32,7 +32,7 @@ From there, activate the plugin as normal. The plugin should take you through a 
 
 To obtain your developer ID, you must first have developer tools added to your Brown Paper Tickets account. First log into BPT, then go to [Account Functions](https://www.brownpapertickets.com/user/functions.html). Click Developer Tools and then add. You'll see a new link in the BPT navigation titled "Developer". Click that and you'll see your developer ID listed at the top.
 
-Your client ID is typically whatever you use to log into Brown Paper Tickets.
+Your client ID is typically whatever you use to log into Brown Paper Tickets. If you are having issues with your client ID, please contact [client services](mailto:support@brownpapertickets.com).
 
 == Plugin Usage ==
 
@@ -68,9 +68,9 @@ This plugin makes use of the following Free/Open Source Software:
 
 == Frequently Asked Questions ==
 
-= I've updated some of my event's on Brown Paper Tickets but the changes are not showing up in the plugin. Why is that? =
+= I've updated some of my events on Brown Paper Tickets but the changes are not showing up in the plugin. Why is that? =
 
-You most likely have enabled the plugin the cache the data the plugin pulls in from Brown Paper Tickets. 
+You have most likely enabled the plugin's cache so it's not pulling in the new event data.
 
 There are a few ways to solve this:
     - You could wait for the cache to expire.
@@ -93,21 +93,21 @@ To add your account:
 
 = My password protected prices are being displayed by the plugin, how do I prevent that? =
 
-Unfortunately, you cannot at this time.
-
-The ability to prevent specific prices from being displayed is a top priority for the next release
+When you're logged into Wordpress as an Administrator, go to the post/page where the event list is being displayed. You should see a green "HIDE PRICE" link under the prices. Clicking that will hide the price from any visitor to the site who is not logged in as an admin.
 
 = How can I customize the look and feel of the event list or the calendar? =
 
-At the moment, not easily. You could edit the event-list's style sheet directly (located plugin directory under ```brown-paper-tickets/assets/css/event-list-short-code.css```).
-
-The ability to easily add your custom style sheet is a top priority for the next release.
+Go to BPT Settings and click on the appearance tab. You can add custom CSS there.
 
 == Upgrade Notice ==
 
 No upgrade notes.
 
 == Changelog ==
+
+= v0.3.1 = 
+
+* Fixed bug where events without dates would throw errors.
 
 = v0.3.0 =
 
@@ -129,7 +129,7 @@ No upgrade notes.
 
 **New Features**
 
-* Users can now add custom CSS for the event listing and calendar 
+* Users can now add custom CSS for the event listing and calendar
 widget/shortcode rules by going to new "Appearance" tab in the
 plugin settings.
 
@@ -139,18 +139,20 @@ public.
     view the post that contains the event listing. You'll see a
     (HIDE PRICE) button.
     Clicking that will prevent the price from being displayed to
-    anyone who isn't an admin. 
+    anyone who isn't an admin.
 
     * __Showing Prices__: After hiding a price, the hide price link
     will become a (DISPLAY PRICE) link.
-    You can also go to the plugin's options page and go to the 
+    You can also go to the plugin's options page and go to the
     "Password Price Settings" tab and choose to display them
     there.
 
 **Bug Fix**
+
 * Fixed issue with calendar not loading properly if using as a widget.
 
 **Other**
+
 * Updated Ractive to version 0.5.8
 
 = v0.1.31 =
@@ -159,7 +161,7 @@ public.
 
 * Fixed rogue console.log();
 
-* Fixed issue where the default title "New Title" was being displayed 
+* Fixed issue where the default title "New Title" was being displayed
 above shortcode calendars.
 
 = v0.1.3 =
@@ -170,9 +172,9 @@ above shortcode calendars.
 **New Option in Settings**
 
 * Added Calendar Options settings. You can now set the "Show upcoming
-Events in Calendar" option. When enabled, this will show the next 5 
+Events in Calendar" option. When enabled, this will show the next 5
 events in the event listing if the clicked day does not have any events.
-When switching months, it will also show all of the upcoming events in 
+When switching months, it will also show all of the upcoming events in
 that month.
 
 **Bug Fixes**
@@ -191,7 +193,7 @@ that month.
 * Fixed issue where event calendar wasn't being displayed if a widget
 wasn't in place.
 
-* Fixed issue where the cache wasn't being deleted properly. 
+* Fixed issue where the cache wasn't being deleted properly.
 
 **Miscellaneous**
 

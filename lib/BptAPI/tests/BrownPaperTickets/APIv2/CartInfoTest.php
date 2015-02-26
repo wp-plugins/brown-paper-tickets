@@ -7,19 +7,18 @@ use PHPUnit_Framework_TestCase;
 class BrownPaperTicketsGetCartContentsTest extends \PHPUnit_Framework_TestCase
 {
 
-
     protected $bpt;
     protected $cartID;
 
     public function __construct()
     {
-        $this->bpt = new CartInfo('p9ny29gi5h');
+        $this->bpt = new CartInfo(getenv('DEVID'));
 
     }
 
     public function testGetCartContents()
     {
-        $cartContents = $this->bpt->getCartContents('Wtpyn4eyrug7NcCIeE2mvaUqU');
+        $cartContents = $this->bpt->getContents('Wtpyn4eyrug7NcCIeE2mvaUqU');
 
         // Test that the array has the proper keys returned for each ticket.
         foreach ($cartContents as $ticket) {
@@ -42,7 +41,7 @@ class BrownPaperTicketsGetCartContentsTest extends \PHPUnit_Framework_TestCase
 
     public function testGetCartValue()
     {
-        $cartValue = $this->bpt->getCartValue('Wtpyn4eyrug7NcCIeE2mvaUqU');
+        $cartValue = $this->bpt->getValue('Wtpyn4eyrug7NcCIeE2mvaUqU');
 
         $this->assertArrayHasKey('cartValue', $cartValue);
         $this->assertArrayHasKey('cartCurrency', $cartValue);

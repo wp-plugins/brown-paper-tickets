@@ -49,7 +49,7 @@
             {{ /if }}
         {{ /prices }}
 
-        {{ #showShipping }}
+        {{ #if prices}}
             <div class="bpt-shopping-cart-shipping-info">
                 <h3>Shipping Information</h3>
                 <div id="bpt-shopping-cart-name">
@@ -139,7 +139,7 @@
                     <option value="amex">American Express</option>
                 </select>
             </div>
-        {{/}}
+        {{/if}}
 
         <div id="bpt-shopping-cart-total">
             <span class="bpt-shopping-cart-value">Total: {{currency(cartValue.cartCurrency)}}{{cartValue.cartValue}}</span>

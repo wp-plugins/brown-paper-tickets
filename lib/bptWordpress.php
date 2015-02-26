@@ -3,9 +3,10 @@ namespace BrownPaperTickets;
 /**
  * A utility library for Wordpress Stuff.
  */
+
 class BptWordpress {
 
-	private function __construct() {
+	public function __construct() {
 
 	}
 
@@ -402,5 +403,54 @@ class BptWordpress {
 		}
 
 		return false;
+	}
+
+	static function set_session_var( $key, $value ) {
+		self::init_session();
+
+		return $_SESSION['bpt_cart'][ sanitize_key( $key ) ] = self::sanitize_var($value);;
+
+	}
+
+	static function get_session_var( $key = null ) {
+		self::init_session();
+
+		if ( ! $key ) {
+			return $_SESSION['bpt_cart'];
+		}
+
+		return $_SESSION['bpt_cart'][ $key ];
+	}
+
+	static function init_session()
+	{
+		if ( ! session_id() ) {
+			session_start();
+		}
+
+		if ( ! isset( $_SESSION['bpt_cart'] ) ) {
+			$_SESSION['bpt_cart'] = array();
+		}
+	}
+
+	static function sanitize_var( $variable ) {
+
+		if ( is_string( $variable ) ) {
+			$variable = htmlentities( $variable );
+		}
+
+		if ( is_array( $variable ) ) {
+			foreach ( $variable as $key => $value ) {
+
+				if ( is_array( $value ) ) {
+					$variable[ htmlentities( $key ) ] = self::sanitize_var( $value );
+					continue;
+				}
+
+				$variable[ htmlentities( $key ) ] = htmlentities( $value );
+			}
+		}
+
+		return $variable;
 	}
 }

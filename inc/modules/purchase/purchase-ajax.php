@@ -2,18 +2,23 @@
 
 namespace BrownPaperTickets\Modules\Purchase;
 
+require_once( plugin_dir_path( __DIR__ ).'../../lib/bptWordpress.php' );
+
+use BrownPaperTickets\BptWordpress as Utilities;
+
 class Ajax
 {
+	private static $nonce_title = 'bpt-purchase-tickets';
 
 	public static function get_cart_contents()
 	{
-		Utilities::check_nonce();
+		Utilities::check_nonce( $_REQUEST['nonce'], self::$nonce_title );
 
-		wp_send_json( Ajax::get_session_var() );
+		wp_send_json( Utilities::get_session_var() );
 	}
 
 	public static function init_cart() {
-		Utilities::check_nonce();
+		Utilities::check_nonce( $_REQUEST['nonce'], self::$nonce_title );
 
 		$dev_id = get_option( '_bpt_dev_id' );
 
@@ -22,8 +27,8 @@ class Ajax
 
 			$cart_info = $cart->initCart();
 
-			Ajax::set_session_var( 'cart_id', $cart_info['cartID'] ); 
-			Ajax::set_session_var( 'cart_created_at', $cart_info['cartCreatedAt'] );
+			Utilities::set_session_var( 'cart_id', $cart_info['cartID'] ); 
+			Utilities::set_session_var( 'cart_created_at', $cart_info['cartCreatedAt'] );
 
 			wp_send_json_success( array( 'message' => 'Cart created.' ) );
 		}
@@ -32,55 +37,33 @@ class Ajax
 	}
 
 	public static function add_prices() {
-		Utilities::check_nonce();
+		Utilities::check_nonce( $_REQUEST['nonce'], self::$nonce_title );
 
 		if ( ! isset( $_POST['prices'] ) ) {
-			wp_send_json_error( array( 'message' => 'No prices were sent.' ) );
+			wp_send_json( array( 'success' => false, 'message' => 'No prices were sent.' ) );
 		}
 
-		if ( Ajax::set_session_var( 'prices', $_POST['prices'] ) ) {
+		if ( Utilities::set_session_var( 'prices', $_POST['prices'] ) ) {
 			wp_send_json( array(
-					'message' => 'Prices added.',
-					'prices' => Ajax::get_session_var( 'prices' )
+					'success' => true,
+					'message' => 'Prices updated.',
+					'prices' => Utilities::get_session_var( 'prices' )
 				)
 			);
 		}
 
-		wp_send_json_error( array( 'message' => 'Unable to add prices.' ) );
+		wp_send_json( array( 'success' => false, 'message' => 'Unable to add prices.' ) );
 	}
 
-	private static function verify_nonce()
-	{
-		$nonce = $_REQUEST['nonce'];
-
-		if ( ! $nonce || ! wp_verify_nonce( $nonce, 'bpt-purchase-tickets' ) ) {
-			wp_send_json_error( array( 'message' => 'Unauthorized.' ) );
-		}
-	}
-
-	private static function set_session_var( $key, $value ) {
-		Ajax::init_session();
-
-		return $_SESSION['bpt_cart'][ $key ] = $value;
+	public static function add_shipping() {
 
 	}
 
-	private static function get_session_var( $key = null ) {
-		Ajax::init_session();
+	public static function add_billing() {
 
-		if ( ! $key ) {
-			return $_SESSION['bpt_cart'];
-		}
-
-		return $_SESSION['bpt_cart'][ $key ];
 	}
 
-	private static function init_session()
-	{
-		if ( ! session_id() ) {
+	public static function get_receipt() {
 
-			session_start();
-		}
 	}
-
 }

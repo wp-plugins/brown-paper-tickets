@@ -105,12 +105,14 @@ class Purchase extends \BrownPaperTickets\Modules\Module {
 
 	public function load_public_ajax_actions() {
 		
-		add_action( 'wp_ajax_bpt_get_cart_contents', array( 'BrownPaperTickets\Modules\Purchase\Ajax', 'get_cart_contents' ) );
 		add_action( 'wp_ajax_nopriv_bpt_get_cart_contents', array( 'BrownPaperTickets\Modules\Purchase\Ajax', 'get_cart_contents' ) );
 
-		add_action( 'wp_ajax_bpt_add_prices', array( 'BrownPaperTickets\Modules\Purchase\Ajax', 'add_prices' ) );
 		add_action( 'wp_ajax_nopriv_bpt_add_prices', array( 'BrownPaperTickets\Modules\Purchase\Ajax', 'add_prices' ) );
+	}
 
+	public function load_admin_ajax_actions() {
+		add_action( 'wp_ajax_bpt_get_cart_contents', array( 'BrownPaperTickets\Modules\Purchase\Ajax', 'get_cart_contents' ) );
+		add_action( 'wp_ajax_bpt_add_prices', array( 'BrownPaperTickets\Modules\Purchase\Ajax', 'add_prices' ) );
 	}
 
 	/**

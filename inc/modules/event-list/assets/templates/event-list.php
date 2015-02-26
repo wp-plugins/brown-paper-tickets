@@ -134,6 +134,8 @@ if ( isset( $css ) ) {
 		<?php }
 
 	if ( $show_dates === 'true' ) { ?>
+
+			{{ #if dates }}
 			<form data-event-id="{{ id }}" data-event-title="{{ title }}" method ="post" class="add-to-cart" action="https://www.brownpapertickets.com/addtocart.html" target="_blank">
 				<input type="hidden" name="event_id" value="{{ id }}" />
 				<div class="event-dates">
@@ -246,6 +248,11 @@ if ( isset( $css ) ) {
 					</div>
 				</div>
 			</form>
+		{{ /if }}
+		{{ ^dates }}
+			<p>Sorry, there are no dates available.</p>
+		{{ /dates }}
+
 		<?php } ?>
 		<div class="bpt-powered-by">
 			<a href="http://www.brownpapertickets.com/event/{{ id }}" target="_blank"><span>View Event on </span><img src="<?php echo esc_url( plugins_url( 'img/bpt-footer-logo.png', __DIR__ ) ); ?>" /></a>

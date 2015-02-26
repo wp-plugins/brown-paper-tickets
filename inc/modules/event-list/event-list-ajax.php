@@ -269,6 +269,15 @@ class Ajax {
 			if ( $sort === 'chrono' ) {
 				usort( $events,
 					function($a, $b) {
+
+						if ( ! isset( $a['dates'] ) || ! isset( $b['dates'] ) ) {
+							return 0;
+						}
+
+						if ( ! isset( $a['dates'][0] ) || ! isset( $b['dates'][0] ) ) {
+							return 0;
+						}
+
 						if ( $a['dates'][0]['dateStart'] < $b['dates'][0]['dateStart'] ) {
 							return -1;
 						}
@@ -283,6 +292,15 @@ class Ajax {
 			if ( $sort === 'reverse' ) {
 				usort( $events,
 					function($a, $b) {
+
+						if ( ! isset( $a['dates'] ) || ! isset( $b['dates'] ) ) {
+							return 0;
+						}
+
+						if ( ! isset( $a['dates'][0] ) || ! isset( $b['dates'][0] ) ) {
+							return 0;
+						}
+
 						if ( $a['dates'][0]['dateStart'] > $b['dates'][0]['dateStart'] ) {
 							return -1;
 						}

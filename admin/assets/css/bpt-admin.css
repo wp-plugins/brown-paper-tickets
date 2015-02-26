@@ -196,3 +196,20 @@ div.brown_paper_tickets_settings_help {
 button#bpt-refresh-events {
 
 }
+
+/**
+ * Appearance Tab
+ */
+
+#bpt-calendar-css-box,
+#bpt-event-list-css-box {
+    width: 100%;
+    font-family: monospace;
+    padding: 10px;
+    height: 250px;
+}
+
+div#bpt-appearance-help-event-list,
+div#bpt-appearance-help-calendar {
+
+}

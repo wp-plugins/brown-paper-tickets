@@ -14,9 +14,6 @@
             "role": "Developer"
         }
     ],
-    "require-dev": {
-
-    },
     "autoload": {
         "psr-0": {
             "BrownPaperTickets": ["src"]

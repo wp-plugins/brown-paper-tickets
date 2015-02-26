@@ -3,7 +3,9 @@
 namespace BrownPaperTickets;
 
 require_once( plugin_dir_path( __FILE__ ).'../inc/brown-paper-tickets-api.php' );
+require_once( plugin_dir_path( __FILE__ ).'/../lib/bptWordpress.php' );
 
+use BrownPaperTickets\BptWordpress;
 use BrownPaperTickets\BPTFeed;
 
 class BPTAjaxActions {
@@ -40,7 +42,6 @@ class BPTAjaxActions {
 		$events = new BPTFeed;
 
 		if ( ! self::cache_data() ) {
-				
 			exit( $events->get_json_events( $client_id, $event_id ) );
 		}
 
@@ -50,13 +51,25 @@ class BPTAjaxActions {
 
 		}
 
-		exit( get_transient( '_bpt_event_list_events' . $post_id  ) );
+		$events = get_transient( '_bpt_event_list_events' . $post_id  );
+
+		if ( $event_id ) {
+			$single_event = self::get_single_event( $event_id, $events );
+
+			if ( $single_event ) {
+				$events = $single_event;
+			}
+		}
+
+		$events = self::filter_hidden_prices( $events );
+
+		exit( json_encode( $events ) );
 	}
 
 	/**
 	 * Get Specific Producer's events.
 	 */
-		
+
 	public static function bpt_get_calendar_events() {
 
 		$nonce           = $_POST['bptNonce'];
@@ -110,7 +123,7 @@ class BPTAjaxActions {
 			$account = new BPTFeed;
 
 			set_transient( '_bpt_user_account_info', $account->get_json_account(), 0 );
-			
+
 		}
 
 		exit( get_transient( '_bpt_user_account_info' ) );
@@ -127,7 +140,6 @@ class BPTAjaxActions {
 		self::check_nonce( $nonce, 'bpt-setup-wizard-nonce' );
 
 		$account = new BPTFeed;
-
 
 		$dev_id    = $_POST['devID'];
 		$client_id = $_POST['clientID'];
@@ -176,7 +188,7 @@ class BPTAjaxActions {
 
 			exit (json_encode( $result ) );
 		}
-		
+
 		if ( ! empty( $cached_data ) ) {
 
 			foreach ( $cached_data as $cache ) {
@@ -197,6 +209,152 @@ class BPTAjaxActions {
 		exit( json_encode( $result ) );
 	}
 
+	public static function bpt_hide_prices() {
+
+		$response = array();
+		$nonce = $_POST['bptNonce'];
+
+		if ( isset( $_POST['admin'] ) ) {
+			exit('admin');
+			$nonceTitle = 'bpt-admin-nonce';
+
+		} else {
+			$nonceTitle = 'bpt-event-list-nonce';
+		}
+
+		self::check_nonce( $nonce, $nonceTitle );
+
+		if ( BptWordpress::is_user_an_admin() ) {
+
+			$hidden_prices = get_option( '_bpt_hidden_prices' );
+
+			if ( $hidden_prices === '' || !$hidden_prices) {
+				$hidden_prices = array();
+			}
+
+			$prices = $_POST['prices'];
+
+			$response['prices'] = $prices;
+			foreach( $prices as $price ) {
+
+				if ( array_key_exists( $price['priceId'], $hidden_prices ) ) {
+					continue;
+				}
+
+				if (empty($price['eventTitle'])) {
+					$response['error'] = 'Event title is required.';
+
+					exit(json_encode($response));
+				}
+
+
+				if (empty($price['eventId'])) {
+					$response['error'] = 'Event ID is required.';
+
+					exit(json_encode($response));
+				}
+
+				if (empty($price['priceId'])) {
+					$response['error'] = 'Price ID is required.';
+
+					exit(json_encode($response));
+				}
+
+				if ( empty( $price['priceName'] ) ) {
+					$response['error'] = 'Price name is required.';
+
+					exit( json_encode( $response ) );
+				}
+
+				$id = $price['priceId'];
+
+				$hidden_prices[ $id ] = $price;
+
+			}
+
+			$response['hiddenPrices'] = $hidden_prices;
+
+			$update_option = update_option( '_bpt_hidden_prices', $hidden_prices );
+
+			if ( $update_option ) {
+
+				$response['success'] = 'Price has been hidden';
+				$response['priceID'] = $price['priceId'];
+
+				exit( json_encode( $response ) );
+
+			} else {
+
+				$response['error'] = 'Could not hide price.';
+				$response['priceID'] = $price['priceId'];
+
+				exit( json_encode( $response ) );
+			}
+		} else {
+
+			$response = array(
+				'error' => 'Not authorized.',
+			);
+
+			exit( json_encode( $response ) );
+		}
+	}
+
+	public static function bpt_unhide_prices() {
+
+		$response = array();
+		$nonce = $_POST['bptNonce'];
+
+		if ( isset( $_POST['admin'] ) ) {
+			$nonceTitle = 'bpt-admin-nonce';
+
+		} else {
+
+			$nonceTitle = 'bpt-event-list-nonce';
+		}
+
+		self::check_nonce( $nonce, $nonceTitle );
+
+
+		if ( BptWordpress::is_user_an_admin() ) {
+
+			$hidden_prices = get_option( '_bpt_hidden_prices' );
+
+			if ( ! $hidden_prices ) {
+				$response['error'] = 'No hidden prices';
+				exit( json_encode( $response ) );
+			}
+
+			$prices = $_POST['prices'];
+			$response['prices'] = $prices;
+
+			foreach ( $prices as $price ) {
+				$id = $price['priceId'];
+				unset( $hidden_prices[ $id ] );
+			}
+
+			$response['hiddenPrices'] = $hidden_prices;
+			$update_option = update_option( '_bpt_hidden_prices', $hidden_prices );
+
+			if ( $update_option ) {
+				$response['success'] = 'Price is now visible.';
+				$response['priceID'] = $price['priceId'];
+				exit( json_encode( $response ) );
+			} else {
+				$response['error'] = 'Could not unhide price.';
+				$response['priceID'] = $price['priceId'];
+				exit( json_encode( $response ) );
+			}
+		} else {
+
+			$response = array(
+				'error' => 'Not authorized.',
+			);
+
+			exit( json_encode( $response ) );
+		}
+	}
+
 	private static function check_nonce( $nonce, $nonce_title ) {
 
 		header( 'Content-type: application/json' );
@@ -205,7 +363,7 @@ class BPTAjaxActions {
 			exit(
 				json_encode(
 					array(
-						'error' => 'Could not obtain events.',
+						'error' => 'Invalid nonce.',
 					)
 				)
 			);
@@ -216,8 +374,6 @@ class BPTAjaxActions {
 	}
 
 	/**
-	 * Cache Dataheader( 'Content-type: application/json' );
-	 * 
 	 * @return boolean Returns whether or not the plugin should cache data.
 	 */
 	private static function cache_data() {
@@ -233,10 +389,75 @@ class BPTAjaxActions {
 
 
 	/**
+	 * Filter Hidden Prices
+	 * @param  mixed $events Either a json string or an array of events.
+	 * @return array         The modified/filtered array.
+	 */
+	private static function filter_hidden_prices( $events ) {
+
+		if ( is_string( $events ) ) {
+			$events = json_decode( $events, true );
+		}
+
+		$hidden_prices = get_option( '_bpt_hidden_prices' );
+
+		if ( $hidden_prices && ! empty( $hidden_prices ) ) {
+
+			// If the user is an admin, we'll just add a property "hidden" to the
+			// price.
+			if ( BptWordpress::is_user_an_admin() ) {
+
+				foreach ( $events as &$event ) { /// The & is a reference. Makes it so
+												// you work on the actual array, not
+												// just a copy of it
+
+					foreach ( $event['dates'] as &$date ) {
+
+						foreach ( $date['prices'] as &$price ) {
+
+							if ( array_key_exists( $price['id'], $hidden_prices ) ) {
+
+								$price['hidden'] = true;
+
+							}
+						}
+					}
+				}
+			} else {
+				// If the user is not an admin, we'll remove that price.
+				foreach ( $events as &$event ) { // The & is a reference. Makes it so
+												// you work on the actual array, not
+												// just a copy of it.
+
+					foreach ( $event['dates'] as &$date ) {
+
+						$i = 0;
+
+						foreach ( $date['prices'] as &$price ) {
+
+							if ( array_key_exists( $price['id'], $hidden_prices ) ) {
+
+								unset( $date['prices'][ $i ] );
+
+							}
+
+							$i++;
+						}
+
+						$date['prices'] = array_values( $date['prices'] );
+					}
+				}
+			}
+		}
+
+		return $events;
+	}
+
+	/**
 	 * Returns the amount of time to cache the data for. This should
 	 * only be called if self::cache_data() is true.
-	 * 
-	 * @return integer The amount of time in seconds the data should be 
+	 *
+	 * @return integer The amount of time in seconds the data should be
 	 * cached.
 	 */
 	private static function cache_time() {
@@ -251,7 +472,7 @@ class BPTAjaxActions {
 
 		if ( $cache_unit === 'hours' ) {
 			return $cache_time * HOUR_IN_SECONDS;
-		}        
+		}
 
 		if ( $cache_unit === 'days' ) {
 

@@ -30,7 +30,6 @@ $plugin_version = BPTPlugin::get_plugin_version();
 				If you would like to request a new feature or if you have encountered a bug, please go <a target="_blank" href="https://github.com/BrownPaperTickets/brown-paper-tickets-wordpress/issues/new">here</a></span> to open up a new issue.
 			</h3>
 		</div>
-
 		<span class="bpt-welcome-info-plugin-info">Plugin Info: <?php esc_html_e( $plugin_slug . ' v' . $plugin_version ); ?> - <a class="bpt-submit-issue" target="_blank" href="https://github.com/BrownPaperTickets/brown-paper-tickets-wordpress/issues/new">Submit Bug</a></span>
 	</div>
 	<nav id="<?php esc_attr_e( $menu_slug );?>">
@@ -40,7 +39,9 @@ $plugin_version = BPTPlugin::get_plugin_version();
 			<li><a class="bpt-admin-tab" href="#general-settings">General Settings</a></li>
 			<li><a class="bpt-admin-tab" href="#event-settings">Event List Settings</a></li>
 			<li><a class="bpt-admin-tab" href="#calendar-settings">Calendar Settings</a></li>
-			<!-- <li><a class="bpt-admin-tab" href="#purchase-settings">Purchase Settings</a></li> -->
+			<li><a class="bpt-admin-tab" href="#password-prices">Password Protected Prices</a></li>
+			<li><a class="bpt-admin-tab" href="#appearance-settings">Appearance</a></li>
+			<?php echo ( is_ssl() ? '<li><a class="bpt-admin-tab" href="#purchase-settings">Purchase Settings</a></li>' : '' ); ?>
 			<li><a class="bpt-admin-tab" href="#help">Help</a></li>
 			<li><a class="bpt-admin-tab" href="#credits">Credits</a></li>
 			<!-- <li><a class="bpt-admin-tab" href="#debug">Debug</a></li> -->
@@ -109,37 +110,28 @@ $plugin_version = BPTPlugin::get_plugin_version();
 				<input name="Submit" type="submit" class="button-primary" value="<?php esc_attr_e( 'Save Changes' ); ?>" />
 			</div>
 		</div>
+		<div id="password-prices">
+			<div>
+				<?php do_settings_sections( $menu_slug . '_password_prices' ); ?>
+				<input name="Submit" type="submit" class="button-primary" value="<?php esc_attr_e( 'Save Changes' ); ?>" />
+			</div>
+		</div>
 		<div id="calendar-settings">
 			<div>
 				<?php do_settings_sections( $menu_slug . '_calendar' ); ?>
 				<input name="Submit" type="submit" class="button-primary" value="<?php esc_attr_e( 'Save Changes' ); ?>" />
 			</div>
 		</div>
+		<div id="appearance-settings">
+			<div>
+				<?php do_settings_sections( $menu_slug . '_appearance' ); ?>
+				<input name="Submit" type="submit" class="button-primary" value="<?php esc_attr_e( 'Save Changes' ); ?>" />
+			</div>
+		</div>
 		<div id="purchase-settings">
 			<div>
-			<h2>In a future release you will be able to enable sales via the plugin.</h2>
-	<?php
-
-if ( ! is_ssl() ) {
-
-	?>
-						<h3 class="error">Sorry, you must connect via SSL (HTTPS) in order to use this option.</h3>
-						<p>
-							Without SSL on your site, you would be enabling your ticket buyers to submit their Credit Card without any sort of security.
-						</p>
-						<p>
-							You'll want to contact your web host or your web person in order to get SSL set up.
-						</p>
-	<?php      
-} else {
-
-	do_settings_sections( $menu_slug . '_purchase' );
-
-	?>
-					<input name="Submit" type="submit" class="button-primary" value="<?php esc_attr_e( 'Save Changes' ); ?>" />
-	<?php
-}
-	?>
+				<?php do_settings_sections( $menu_slug . '_purchase' ); ?>
+				<input name="Submit" type="submit" class="button-primary" value="<?php esc_attr_e( 'Save Changes' ); ?>" />
 			</div>
 		</div>
 		<div id="help">

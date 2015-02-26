@@ -3,8 +3,8 @@ Contributors: Chandler Blum
 Donate Link: N/A
 Tags: bpt, brown paper tickets
 Requires at least: 3.6
-Tested up to: 4.0
-Stable tag: 0.1.31
+Tested up to: 4.1.1
+Stable tag: 0.3.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -108,6 +108,50 @@ The ability to easily add your custom style sheet is a top priority for the next
 No upgrade notes.
 
 == Changelog ==
+
+= v0.3.0 =
+
+**New Features**
+
+* Added ability to include service fee in price value.
+* Added ability to set a max quantity sold per price.
+* Added ability to sort events chronologically or reverse chronologically.
+
+**Bug Fixes**
+
+* Fixed issue where prices were not hidden if the data was not cached.
+
+= v0.2.1 =
+
+* Fixed bug with Ractive and the event listing.
+
+= v0.2.0 =
+
+**New Features**
+
+* Users can now add custom CSS for the event listing and calendar 
+widget/shortcode rules by going to new "Appearance" tab in the
+plugin settings.
+
+* Users can now manually hide prices that they do not wish to make
+public.
+    * __Hiding Prices__: When logged into Wordpress as an admin,
+    view the post that contains the event listing. You'll see a
+    (HIDE PRICE) button.
+    Clicking that will prevent the price from being displayed to
+    anyone who isn't an admin. 
+
+    * __Showing Prices__: After hiding a price, the hide price link
+    will become a (DISPLAY PRICE) link.
+    You can also go to the plugin's options page and go to the 
+    "Password Price Settings" tab and choose to display them
+    there.
+
+**Bug Fix**
+* Fixed issue with calendar not loading properly if using as a widget.
+
+**Other**
+* Updated Ractive to version 0.5.8
 
 = v0.1.31 =
 

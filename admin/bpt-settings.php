@@ -1,12 +1,9 @@
 <?php
 
-require_once( plugin_dir_path( __FILE__ ).'../inc/brown-paper-tickets-api.php');
-require_once( plugin_dir_path( __FILE__ ).'../inc/brown-paper-tickets-plugin.php');
+require_once( plugin_dir_path( __FILE__ ).'../src/brown-paper-tickets-plugin.php');
 
 use BrownPaperTickets\BPTFeed;
 use BrownPaperTickets\BPTPlugin;
-
-$events = new BPTFeed;
 
 $menu_slug = BPTPlugin::get_menu_slug();
 $plugin_slug    = BPTPlugin::get_plugin_slug();
@@ -39,7 +36,6 @@ $plugin_version = BPTPlugin::get_plugin_version();
 			<li><a class="bpt-admin-tab" href="#general-settings">General Settings</a></li>
 			<li><a class="bpt-admin-tab" href="#event-settings">Event List Settings</a></li>
 			<li><a class="bpt-admin-tab" href="#calendar-settings">Calendar Settings</a></li>
-			<li><a class="bpt-admin-tab" href="#password-prices">Password Protected Prices</a></li>
 			<li><a class="bpt-admin-tab" href="#appearance-settings">Appearance</a></li>
 			<?php echo ( is_ssl() ? '<li><a class="bpt-admin-tab" href="#purchase-settings">Purchase Settings</a></li>' : '' ); ?>
 			<li><a class="bpt-admin-tab" href="#help">Help</a></li>
@@ -110,12 +106,6 @@ $plugin_version = BPTPlugin::get_plugin_version();
 				<input name="Submit" type="submit" class="button-primary" value="<?php esc_attr_e( 'Save Changes' ); ?>" />
 			</div>
 		</div>
-		<div id="password-prices">
-			<div>
-				<?php do_settings_sections( $menu_slug . '_password_prices' ); ?>
-				<input name="Submit" type="submit" class="button-primary" value="<?php esc_attr_e( 'Save Changes' ); ?>" />
-			</div>
-		</div>
 		<div id="calendar-settings">
 			<div>
 				<?php do_settings_sections( $menu_slug . '_calendar' ); ?>
@@ -135,62 +125,9 @@ $plugin_version = BPTPlugin::get_plugin_version();
 			</div>
 		</div>
 		<div id="help">
-			<h1>Help</h1>
-			<p>
-				<h2>F.A.Q.</h2>
-				<ul>
-					<li>
-						<h3>I've updated some of my event's on Brown Paper Tickets but the changes are not showing up in the plugin. Why is that?</h3>
-						<p>
-							You most likely have enabled the plugin the cache the data the plugin pulls in from Brown Paper Tickets. 
-						</p>
-						<p>
-							There are a few ways to solve this:
-							<ol>
-								<li>You could wait for the cache to expire.</li>
-								<li>You could delete the cache and force the plugin to refresh the data.</li>
-							</ol>
-						</p>
-						<p>To delete the cache, simply go to the "General Settings" tab above and click "Delete Cache".</p>
-					</li>
-					<li>
-						<h3>I am 100% certain that my developer ID and client ID are correct. What is going on?</h3>
-						<p>It's possible that your client ID is not attached to your developer tools.</p>
-
-						<p>To add your account:</p>
-
-						<ol>
-							<li>Go to <a target="_blank" href="https://www.brownpapertickets.com/developer/accounts.html">Authorized Accounts</a>.</li>
-							<li>If your account is listed under "Current Account", click "Edit" and then "Delete Account".</li>
-							<li>On the next screen, under "Add a Client" enter in your username and password, select the permissions you need and hit "Add Client Account".</li>
-							<li>Your account should now be authorized.</li>
-						</ol>
-
-						<p>If you are still having issues, send an email to <a href="mailto:support@brownpaperticekts.com">support@brownpapertickets.com</a></p>
-					</li>
-					<li>
-						<h3>My password protected prices are being displayed by the plugin, how do I prevent that?</h3>
-
-						<p>Unfortunately, you cannot at this time.</p>
-						<p>The ability to prevent specific prices from being displayed is a top priority for the next release</p>
-					</li>
-					<li>
-						<h3>How can I customize the look and feel of the event list or the calendar?</h3>
-
-						<p>
-							At the moment, not easily. You could edit the event-list's style sheet directly (located plugin directory under 
-							<pre class="bpt-inline">brown-paper-tickets/assets/css/event-list-short-code.css</pre>).
-						</p>
-
-						<p>The ability to easily add your custom style sheet is a top priority for the next release.</p>
-					</li>
-					<li>
-				</ul>
-			</p>
-			<h3>Setup Wizard</h3>
-			<ul>
-				<li>Go To <a href="http://localhost/bptwp/wp-admin/admin.php?page=brown_paper_tickets_settings_setup_wizard">Setup Wizard</a></li>
-			</ul>
+			<div>
+				<?php do_settings_sections( $menu_slug . '_help' ); ?>
+			</div>
 		</div>
 		<div id="credits">
 			<h3>Credits</h3>

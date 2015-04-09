@@ -15,7 +15,7 @@ class BptWordpress {
 	 */
 	public static function check_nonce( $nonce, $nonce_title ) {
 
-		if ( ! wp_verify_nonce( $nonce, $nonce_title ) ) {
+		if ( ! wp_verify_nonce( htmlentities( $nonce ), $nonce_title ) ) {
 			wp_send_json_error( 'Invalid nonce.' );
 		}
 
@@ -25,8 +25,16 @@ class BptWordpress {
 	/**
 	 * @return boolean Returns whether or not the plugin should cache data.
 	 */
-	public static function cache_data() {
+	public static function cache_data( $key, $value ) {
+		if ( ! self::cache_enabled() ) {
+			return false;
+		}
 
+		
+
+	}
+
+	public static function cache_enabled() {
 		$cache_time = get_option( '_bpt_cache_time' );
 
 		if ( $cache_time === 'false' ) {
@@ -46,6 +54,10 @@ class BptWordpress {
 	public static function cache_time() {
 
 		$cache_time = get_option( '_bpt_cache_time' );
+
+		if ( ! $cache_time ) {
+			return false;
+		}
 
 		$cache_unit = get_option( '_bpt_cache_unit' );
 
@@ -452,5 +464,205 @@ class BptWordpress {
 		}
 
 		return $variable;
+	}
+
+
+	/**
+	 * Date Methods
+	 *
+	 */
+	public static function date_has_past( $date ) {
+
+		if ( strtotime( $date['dateStart'] ) < time() ) {
+			return true;
+		}
+		return false;
+	}
+
+	public static function date_is_live( $date ) {
+
+		if ( ! $date['live'] ) {
+			return false;
+		} else {
+			return true;
+		}
+
+	}
+
+	public static function date_is_sold_out( $date ) {
+
+		if ( self::date_has_past( $date ) === true && strtotime( $date['dateStart'] ) >= time() ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Price Methods
+	 */
+
+	public static function price_is_live( $price ) {
+		if ( ! $price['live'] ) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	/**
+	 * Conversion Methods
+	 */
+	/**
+	 * Convert Date. Converst the Date to a human readable date.
+	 *
+	 * @param  string $date The String that needs to be formatted.
+	 * @return string       The formatted date string.
+	 */
+	public static function convert_date( $date ) {
+		return strftime( '%B %e, %Y', strtotime( $date ) );
+	}
+
+	/**
+	 * Convert Time. Converst the Time to a human readable date.
+	 * @param  string $time The string to be formated.
+	 * @return string       The formatted string.
+	 */
+	public static function convert_time( $date ) {
+		return strftime( '%l:%M%p', strtotime( $date ) );
+	}
+
+	public static function remove_bad_events( $event_list ) {
+		foreach ( $event_list as $eventIndex => $event ) {
+
+			if ( ! $event['live'] ) {
+
+				unset( $event_list[ $eventIndex ] );
+			}
+
+			$event_list = array_values( $event_list );
+		}
+
+		return $event_list;
+	}
+
+	/**
+	 * Removes past dates and deactivated from an array of events.
+	 * @param  array   $event_list     	   An array of events with dates.
+	 * @param  boolean $remove_deactivated Pass false if you want to remove deactivated dates.
+	 * @param  boolean $remove_past        Pass false if you want to remove past dates.
+	 * @return array                       The modified event array with bad dates removed.
+	 */
+	public static function remove_bad_dates( $event_list, $remove_deactivated = true, $remove_past = true ) {
+
+		foreach ( $event_list as $event_index => $event ) {
+
+			if ( ! isset($event['dates'] ) ) {
+				continue;
+			}
+
+			foreach ( $event['dates'] as $date_index => $date ) {
+
+				$remove_date = false;
+
+				if ( $remove_past && self::date_has_past( $date ) ) {
+					$remove_date = true;
+				}
+
+				if ( $remove_deactivated && ! self::date_is_live( $date ) ) {
+					$remove_date = true;
+				}
+
+				if ( $remove_date ) {
+					unset( $event['dates'][ $date_index ] );
+				}
+			}
+
+			$event['dates'] = array_values( $event['dates'] );
+
+			$event_list[ $event_index ] = $event;
+		}
+
+		return $event_list;
+	}
+
+	public static function remove_bad_prices( $event_list ) {
+		foreach ( $event_list as $event_index => $event ) {
+
+			foreach ( $event['dates'] as $date_index => $date ) {
+
+				foreach ( $date['prices'] as $priceIndex => $price ) {
+
+					if ( self::price_is_live( $price ) === false ) {
+						unset( $date['prices'][ $priceIndex ] );
+					}
+				}
+
+				$date['prices'] = array_values( $date['prices'] );
+
+				$event['dates'][ $date_index ] = $date;
+			}
+
+			$event_list[ $event_index ] = $event;
+		}
+
+		return $event_list;
+	}
+
+
+	public static function sort_prices( $event_list ) {
+		$sort_method = get_option( '_bpt_price_sort' );
+
+		foreach ( $event_list as $event_index => $event ) {
+
+			foreach ( $event['dates'] as $date_index => $date ) {
+
+				if ( $sort_method === 'alpha_asc' ) {
+					$date['prices'] = self::sort_by_key( $date['prices'], 'name', true );
+				}
+
+				if ( $sort_method === 'alpha_desc' ) {
+					$date['prices'] = self::sort_by_key( $date['prices'], 'name' );
+				}
+
+				if ( $sort_method === 'value_desc' ) {
+					$date['prices'] = self::sort_by_key( $date['prices'], 'value', true );
+				}
+
+				if ( $sort_method === 'value_asc' )  {
+					$date['prices'] = self::sort_by_key( $date['prices'], 'value' );
+				}
+
+				$event['dates'][ $date_index ] = $date;
+			}
+
+			$event_list[ $event_index ] = $event;
+		}
+
+		return $event_list;
+	}
+
+	public static function sort_by_key( $array, $key, $reverse = false ) {
+
+		//Loop through and get the values of our specified key
+		foreach ( $array as $k => $v ) {
+			$b[] = strtolower( $v[ $key ] );
+		}
+
+		if ( $reverse === false ) {
+
+			asort( $b );
+
+		} else {
+
+			arsort( $b );
+
+		}
+
+		foreach ( $b as $k => $v ) {
+			$c[] = $array[ $k ];
+		}
+
+		return $c;
 	}
 }

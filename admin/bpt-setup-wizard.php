@@ -1,15 +1,17 @@
 <?php
 
-	require_once( plugin_dir_path( __FILE__ ).'../inc/brown-paper-tickets-api.php');
+use BrownPaperTickets\Modules\Account\Inputs as AccountInputs;
+use BrownPaperTickets\Modules\EventList\Inputs as EventListInputs;
+use BrownPaperTickets\Modules\Calendar\Inputs as CalendarInputs;
+use BrownPaperTickets\Modules\General\Inputs as GeneralInputs;
 
-	use BrownPaperTickets\BPTSettingsFields;
-	$settings_fields = new BPTSettingsFields;
+require_once( plugin_dir_path( __FILE__ ).'../src/brown-paper-tickets-plugin.php');
 
-	require_once( plugin_dir_path( __FILE__ ).'../inc/brown-paper-tickets-plugin.php');
+use BrownPaperTickets\BPTPlugin;
+$menu_slug = BPTPlugin::get_menu_slug();
 
-	use BrownPaperTickets\BPTPlugin;
-	$menu_slug = BPTPlugin::get_menu_slug();
 ?>
+
 <form id="bpt-setup-wizard-form" method="post" action="options.php">
 <?php settings_fields( $menu_slug ); ?>
 <div class="bpt-setup-wizard-wrapper">
@@ -29,7 +31,7 @@
 		<h3>
 			First, you'll need you'll Brown Paper Tickets Developer ID.
 		</h3>
-		<?php $settings_fields->get_developer_id_input(); ?>
+		<?php AccountInputs::developer_id(); ?>
 		<p>
 			If you don't already have one, you'll need to do the following to obtain one.
 		</p>
@@ -54,7 +56,7 @@
 		<h3>
 			Next you'll need your Client ID.
 		</h3>
-		<?php $settings_fields->get_client_id_input(); ?>
+		<?php AccountInputs::client_id(); ?>
 		<p>
 			Your Client ID is the Brown Paper Tickets <em>username</em> 
 			of your (or the producer whose events you want to list) account.

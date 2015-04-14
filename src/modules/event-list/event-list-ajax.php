@@ -43,7 +43,8 @@ class Ajax {
 
 		if ( ! Utilities::cache_enabled() ) {
 			$events = $events->get_events( $client_id, $event_id );
-			$events = self::filter_hidden_prices( $events );
+			$events = self::sort_events( $events );
+			$events = self::apply_price_options( $events );
 
 			wp_send_json( $events, true );
 		}
@@ -60,7 +61,7 @@ class Ajax {
 			if ( ! $single_event ) {
 				wp_send_json( array( 'success' => false, 'error' => 'Could not find event.' ) );
 			}
-				
+
 			$events = array( $single_event );
 		}
 

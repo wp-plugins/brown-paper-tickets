@@ -4,7 +4,7 @@ Donate Link: N/A
 Tags: bpt, brown paper tickets
 Requires at least: 3.6
 Tested up to: 4.1.1
-Stable tag: 0.4.0
+Stable tag: 0.4.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -104,6 +104,13 @@ Go to BPT Settings and click on the appearance tab. You can add custom CSS there
 No upgrade notes.
 
 == Changelog ==
+
+= v0.4.1 =
+
+**Bug Fixes**
+
+* Fixed bug where event list display options weren't being applied if the cache wasn't enabled. #fixes 10
+* Added various empty index.php files to prevent directory listings on misconfigured servers.
 
 = v0.4.0 =
 

@@ -163,13 +163,6 @@ if ( isset( $css ) ) {
 					<tr data-price-id="{{ id }}" class="{{ isHidden(hidden) }}" >
 						<td class="bpt-price-name" data-price-name="{{name}}" data-event-title="{{ title }}">
 						{{{ unescapeHTML(name) }}}
-						{{ #hidden }}
-							<?php echo ( Utilities::is_user_an_admin() ? '<br/><a href="#" on-click="unhidePrice" class="bpt-unhide-price" data-price-name="{{ name }}" data-price-id="{{ id }}">(Display Price)</a>' : '' ); ?>
-						{{ /hidden}}
-
-						{{ ^hidden }}
-							<?php echo ( Utilities::is_user_an_admin() ? '<br/><a href="#" on-click="hidePrice" class="bpt-hide-price" data-price-name="{{ name }}" data-price-id="{{ id }}">(Hide Price)</a>' : '' ); ?>
-						{{ /hidden }}
 
 						</td>
 						<td class="bpt-price-value" data-price-value="{{ formatPrice(value, '<?php esc_attr_e( $currency ); ?>' ) }}">{{ formatPrice(value, '<?php esc_attr_e( $currency ); ?>' ) }}</td>
@@ -179,12 +172,30 @@ if ( isset( $css ) ) {
 								<option value="0" selected="true">0</option>
 							</select>
 
-							<?php if ( Utilities::is_user_an_admin() ) { ?>
-							<label class="bpt-price-max-quantity" for="bpt-price-max-quantity-{{ id }}">Set Max Quantity</label>
-							<input id="bpt-price-max-quantity-{{ id }}" type="text" value="{{ maxQuantity }}" class="bpt-price-max-quantity" on-change="setPriceMaxQuantity" placeholder="Max Qty">
-							<?php } ?>
 						</td>
 					</tr>
+					<?php if ( Utilities::is_user_an_admin() ) { ?>
+					<tr class="bpt-admin-option">
+						<td colspan="3">
+							<!-- <h5>Price Options</h5> -->
+							<span>
+								<label for="bpt-price-hidden-{{ id }}" class="bpt-admin-option bpt-price-hidden">Display Price</label>
+								<select id="bpt-price-hidden-{{ id }}" on-change="togglePriceVisibility" class="bpt-admin-option bpt-price-hidden" data-price-id="{{ id }}">
+									<option {{ ^hidden }}selected{{ /hidden }} value="true">Yes</option>
+									<option {{ #hidden }}selected{{ /hidden }}value="false">No</option>
+								</select>
+							</span>
+							<span>
+								<label class="bpt-admin-option bpt-price-max-quantity" for="bpt-price-max-quantity-{{ id }}">Set Max Quantity</label>
+								<input id="bpt-price-max-quantity-{{ id }}" type="text" value="{{ .maxQuantity }}" class="bpt-admin-option bpt-price-max-quantity" on-change="setPriceMaxQuantity" placeholder="20">
+							</span>
+							<span>
+								<label class="bpt-admin-option bpt-price-interval" for="bpt-price-interval-{{ id }}">Set Interval</label>
+								<input id="bpt-price-interval-{{ id }}" type="text" value="{{ .interval }}" class="bpt-admin-option bpt-price-interval" on-change="setPriceIntervals" placeholder="1">
+							</span>
+						</td>
+					</tr>
+					<?php } ?>
 					{{ / }}
 					{{ ^prices }}
 					<tr>

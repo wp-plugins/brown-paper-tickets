@@ -4,7 +4,7 @@ Donate Link: N/A
 Tags: bpt, brown paper tickets
 Requires at least: 3.6
 Tested up to: 4.1.1
-Stable tag: 0.4.1
+Stable tag: 0.5.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -104,6 +104,16 @@ Go to BPT Settings and click on the appearance tab. You can add custom CSS there
 No upgrade notes.
 
 == Changelog ==
+
+= v0.5.0 =
+
+**New Features**
+
+* Added ability to set a price's interval.
+
+**Bug Fixes**
+
+* Fixed bug that made the price's quantity wacky when changing the max quantity or the interval.
 
 = v0.4.1 =
 

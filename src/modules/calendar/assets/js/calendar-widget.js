@@ -32,7 +32,6 @@
                 currentEvents: bptCalendar.events,
                 formatDate: function formatDate(newFormat, date) {
                     var singleDate = moment(date, 'YYYY-MM-DD');
-                    console.log(newFormat);
                     return singleDate.format(newFormat);
                 },
                 formatTime: function formatTime(newFormat, time) {

@@ -250,7 +250,7 @@ class Ajax {
 						continue;
 					}
 
-					$max_quantity[ $id  ] = $max;
+					$max_quantity[ $id ] = $max;
 				}
 			}
 
@@ -260,6 +260,42 @@ class Ajax {
 		}
 
 		wp_send_json_error( 'Unable to update price quantity.' );
+	}
+
+	public static function set_price_intervals() {
+		if ( isset( $_POST['intervals'] ) ) {
+			$price_intervals = get_option( '_bpt_price_intervals' );
+
+			if ( ! $price_intervals ) {
+				$price_intervals = array();
+			}
+
+			foreach ( $_POST['intervals'] as $prices ) {
+				foreach ( $prices as $id => $interval ) {
+					$id = intval( $id );
+					$interval = intval( $interval );
+
+					if ($interval === 0) {
+						unset( $price_intervals[ $id ] );
+						continue;
+					}
+
+					$price_intervals[ $id ] = $interval;
+				}
+			}
+
+			if ( update_option( '_bpt_price_intervals', $price_intervals ) ) {
+				wp_send_json(
+					array(
+						'success' => true,
+						'message' => 'Updated price interval.',
+						'interval' => $price_intervals
+					)
+				);
+			}
+		}
+
+		wp_send_json_error( 'Unable to update price interval.' );
 	}
 
 	private static function sort_events( $events ) {
@@ -322,7 +358,7 @@ class Ajax {
 		$events = self::filter_hidden_prices( $events );
 		$events = self::apply_max_quantity( $events );
 		$events = self::include_service_fee( $events );
-
+		$events = self::apply_intervals( $events );
 		return $events;
 	}
 
@@ -335,6 +371,24 @@ class Ajax {
 						foreach ( $max_quantity as $max ) {
 							if ( key( $max_quantity ) === $price['id'] ) {
 								$price['maxQuantity'] = $max;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return $events;
+	}
+
+	private static function apply_intervals( $events ) {
+		if ( $intervals = get_option( '_bpt_price_intervals' ) ) {
+			foreach ( $events as &$event ) {
+				foreach ( $event['dates'] as &$date ) {
+					foreach ( $date['prices'] as &$price ) {
+						foreach ( $intervals as $interval ) {
+							if ( key( $intervals ) === $price['id'] ) {
+								$price['interval'] = $interval;
 							}
 						}
 					}

@@ -126,16 +126,36 @@
         clear: both;
     }
 
-    .bpt-default-theme.bpt-event label.bpt-price-max-quantity {
-        font-size: 10px;
-        display: inline-block;
-        width: 100%;
+    /**
+     * Admin Options
+     */
+    .bpt-default-theme tr.bpt-admin-option {
+        border-bottom: 1px solid #D1D2D4;
     }
 
-    .bpt-default-theme.bpt-event input.bpt-price-max-quantity {
+    .bpt-default-theme tr.bpt-admin-option td {
+        text-align: left;
+    }
+
+    .bpt-default-theme tr.bpt-admin-option h5 {
+        font-size: 12px;
+        margin: 0;
+    }
+
+    .bpt-default-theme tr.bpt-admin-option span {
+        margin-right: 15px;
+    }
+
+    .bpt-default-theme label.bpt-admin-option {
+        font-size: 10px;
+        display: inline-block;
+    }
+
+    .bpt-default-theme input.bpt-admin-option,
+    .bpt-default-theme select.bpt-admin-option {
         font-size: 10px;
         text-align: center;
-        width: 75px;
+        width: 50px;
     }
 
     .bpt-default-theme.bpt-event button.bpt-submit {

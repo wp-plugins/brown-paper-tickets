@@ -13,7 +13,8 @@
 			postID = eventListOptions.postID,
 			allEvents = [],
 			eventList,
-			setPriceMaxQuantity;
+			setPriceMaxQuantity,
+			setPriceIntervals;
 
 		eventList = new Ractive({
 			el: '#bpt-event-list-' + postID,
@@ -56,13 +57,23 @@
 					return currency + '' + price;
 				},
 				getQuantityOptions: function(price) {
+
 					var options,
 						total = price.maxQuantity || 20,
+						interval = price.interval || 1,
 						i = 0;
+
+					if (!_.isNumber(interval)) {
+						interval = parseInt(interval);
+					}
+
+					if (!_.isNumber(total)) {
+						total = parseInt(total);
+					}
 
 					while (i <= total) {
 						options = options + '<option value="' + i + '">' + i + '</option>';
-						i++;
+						i = i + interval;
 					}
 
 					return options;
@@ -79,7 +90,10 @@
 		eventList.on({
 			showFullDescription: function showFullDescription(event) {
 				event.original.preventDefault();
-				$(event.node).parent().next('.bpt-event-full-description').toggleClass('hidden');
+				$(event.node)
+					.parent()
+					.next('.bpt-event-full-description')
+					.toggleClass('hidden');
 			},
 			hidePrice: function(event) {
 				showOrHidePrice(event);
@@ -89,7 +103,17 @@
 			},
 			setPriceMaxQuantity: function(event) {
 				setPriceMaxQuantity(event);
-			}
+			},
+			togglePriceVisibility: function(event) {
+				if (event.node.value === 'true') {
+					showOrHidePrice(event, true);
+				} else {
+					showOrHidePrice(event);
+				}
+			},
+			setPriceIntervals: function(event) {
+				setPriceIntervals(event);
+			},
 		});
 
 		getEvents = function(){
@@ -100,7 +124,6 @@
 				};
 
 				if ( eventListOptions.clientID ) {
-
 					bptData.clientID = eventListOptions.clientID;
 				}
 
@@ -164,6 +187,7 @@
 
 				});
 		};
+
 
 		showOrHidePrice = function(event, showPrice) {
 			var priceLink = $(event.original.target),
@@ -253,6 +277,32 @@
 
 			});
 		};
+
+		setPriceIntervals = function(event) {
+			event.original.preventDefault();
+
+			var id = event.context.id.toString(),
+				interval = event.original.target.value,
+				price = {},
+				data = {
+					bptNonce: eventListOptions.bptNonce,
+					action: 'bpt_set_price_intervals',
+					intervals: []
+				};
+
+			price[id] = interval;
+
+			data.intervals.push(price);
+
+			$.ajax(
+				eventListOptions.ajaxurl,
+				{
+					type: 'POST',
+					data: data
+				}
+			).always()
+			.done();
+		}
 
 		init = (function() {
 			getEvents();

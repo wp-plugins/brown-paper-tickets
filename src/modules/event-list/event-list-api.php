@@ -28,7 +28,6 @@ class Api extends \BrownPaperTickets\Modules\ModuleApi {
 		$show_sold_out_dates  = get_option( '_bpt_show_sold_out_dates' );
 		$show_sold_out_prices = get_option( '_bpt_show_sold_out_prices' );
 
-
 		$event_info = new \BrownPaperTickets\APIv2\EventInfo( $this->dev_id );
 
 		if ( $event_id ) {

@@ -406,6 +406,7 @@ class Inputs {
 					</p>
 				</div>
 			</div>
+			<p class="bpt-help">This will override any individual price's service fee setting.</p>
 		</div>
 		<?php
 	}

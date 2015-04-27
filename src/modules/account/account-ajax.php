@@ -12,8 +12,8 @@ class Ajax
 	private static $nonce_title = 'bpt-admin-nonce';
 
 	public static function get_account() {
-
-		Utilities::check_nonce( $_REQUEST['nonce'], self::$nonce_title );
+		$get = filter_input_array( INPUT_GET, FILTER_SANITIZE_ENCODED );
+		Utilities::check_nonce( $get['nonce'], self::$nonce_title );
 
 		$account_info = false;
 
@@ -41,11 +41,11 @@ class Ajax
 	 */
 
 	public static function test_account() {
+		$post = filter_input_array( INPUT_POST, FILTER_SANITIZE_ENCODED );
+		Utilities::check_nonce( $post['nonce'], 'bpt-admin-nonce' );
 
-		Utilities::check_nonce( $_REQUEST['nonce'], 'bpt-admin-nonce' );
-
-		$dev_id    = ( isset( $_REQUEST['devID'] ) ? htmlentities( $_REQUEST['devID'] ) : false );
-		$client_id = ( isset( $_REQUEST['clientID'] ) ? htmlentities( $_REQUEST['clientID'] ) : false );
+		$dev_id    = ( isset( $post['devID'] ) ? htmlentities( $post['devID'] ) : false );
+		$client_id = ( isset( $post['clientID'] ) ? htmlentities( $post['clientID'] ) : false );
 
 		if ( ! $dev_id ) {
 			wp_send_json( array( 'success' => false, 'error' => 'No developer ID.' ) );

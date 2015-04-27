@@ -188,7 +188,7 @@
             $.ajax(
                 bptWP.ajaxurl,
                 {
-                    type: 'POST',
+                    type: 'GET',
                     data: {
                         // wp ajax action
                         action : 'bpt_get_account',
@@ -306,25 +306,6 @@
             })
             .fail(function(){});
         },
-        testApi: function testApi(event) {
-            event.preventDefault();
-            var resultsBox = $('#test-api-results');
-            $.ajax(
-                bptWP.ajaxurl,
-                {
-                    type: 'GET',
-                    data: {
-                        action: 'bpt_account_test',
-                        nonce: bptWP.nonce
-                    }
-                }
-            )
-            .always(function(){})
-            .done(function(data) {
-                console.log(data);
-            })
-            .fail(function(){});
-        }
     };
 
     $(document).ready(function() {
@@ -382,7 +363,5 @@
         admin.getAccount();
 
         appearanceTab();
-
-        console.log(bptWP);
     });
 })(jQuery);

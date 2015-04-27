@@ -137,6 +137,10 @@ class EventList extends \BrownPaperTickets\Modules\Module {
 			self::$setting_prefix . 'price_intervals'
 		);
 
+		register_setting(
+			self::$menu_slug,
+			self::$setting_prefix . 'price_include_fee'
+		);
 	}
 
 	public function register_sections() {
@@ -310,7 +314,7 @@ class EventList extends \BrownPaperTickets\Modules\Module {
 
 		update_option( self::$setting_prefix . 'price_max_quantity', array() );
 		update_option( self::$setting_prefix . 'price_intervals', array() );
-
+		update_option( self::$setting_prefix . 'price_include_fee', array() );
 	}
 
 	public function load_admin_ajax_actions() {
@@ -337,6 +341,11 @@ class EventList extends \BrownPaperTickets\Modules\Module {
 		add_action(
 			'wp_ajax_bpt_set_price_intervals',
 			array( 'BrownPaperTickets\Modules\EventList\Ajax', 'set_price_intervals' )
+		);
+
+		add_action(
+			'wp_ajax_bpt_set_price_include_fee',
+			array( 'BrownPaperTickets\Modules\EventList\Ajax', 'set_price_include_fee' )
 		);
 	}
 

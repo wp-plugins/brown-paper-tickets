@@ -3,8 +3,8 @@ Contributors: Chandler Blum
 Donate Link: N/A
 Tags: bpt, brown paper tickets
 Requires at least: 3.6
-Tested up to: 4.1.1
-Stable tag: 0.5.0
+Tested up to: 4.2.1
+Stable tag: 0.6.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -104,6 +104,17 @@ Go to BPT Settings and click on the appearance tab. You can add custom CSS there
 No upgrade notes.
 
 == Changelog ==
+
+= v0.6.0 =
+
+**New Features**
+
+* Added ability to set whether or not to include the service fee on an individual price.
+
+**Bug Fixes**
+
+* Fixed some input sanitization.
+* Fixed bug where the price name was undefined in the hidden prices section of the event list options.
 
 = v0.5.0 =
 

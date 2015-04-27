@@ -9,8 +9,9 @@ class Ajax
 	private static $nonce_title = 'bpt-admin-nonce';
 
 	public static function get_all_options() {
+		$get = filter_input_array( INPUT_GET, FILTER_SANITIZE_ENCODED );
 
-		Utilities::check_nonce( $_GET['nonce'], self::$nonce_title );
+		Utilities::check_nonce( $get['nonce'], self::$nonce_title );
 
 		global $wpdb;
 
@@ -23,7 +24,7 @@ class Ajax
 
 		$results = array();
 
-		foreach ( $options as $option ) {
+		foreach ( $options as &$option ) {
 			$option_name = str_replace( '_bpt_', '', $option->option_name );
 			$results[ $option_name ] = $option->option_value;
 		}

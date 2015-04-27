@@ -86,7 +86,7 @@
             $.ajax(
             calendarOptions.ajaxurl,
             {
-                type: 'POST',
+                type: 'GET',
                 data: ajaxData,
                 accepts: 'json',
                 dataType: 'json'

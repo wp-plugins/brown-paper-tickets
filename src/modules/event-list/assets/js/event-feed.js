@@ -14,7 +14,8 @@
 			allEvents = [],
 			eventList,
 			setPriceMaxQuantity,
-			setPriceIntervals;
+			setPriceIntervals,
+			toggleFee;
 
 		eventList = new Ractive({
 			el: '#bpt-event-list-' + postID,
@@ -34,6 +35,14 @@
 					return _.unescape(html);
 				},
 
+				/**
+				 * Takes a price string and a currency symbol, splits the price
+				 * into an array at the decimal point and replaces the "." with
+				 * a "," if the currency symbol is the €.
+				 * the proper
+				 * @param {string} price    A price string with a "." separator.
+				 * @param {string} currency The currency Symbol.
+				 */
 				formatPrice: function formatPrice(price, currency) {
 					var separator = '.',
 						priceArr;
@@ -54,7 +63,28 @@
 						price = priceArr[0] + separator + priceArr[1];
 					}
 
-					return currency + '' + price;
+					return currency + '' + price.toString();
+				},
+				/**
+				 * Formats the service fee using @formatPrice if the service
+				 * fee isn't free/0.
+				 * @param {string} fee      Same as @formatPrice
+				 * @param {string} currency Same as @currency
+				 */
+				formatServiceFee: function(fee, currency) {
+					if (!fee) {
+						return;
+					}
+
+					return this.data.formatPrice(fee, currency);
+				},
+				priceValue: function(price) {
+					var value = price.value;
+					if (price.includeFee) {
+						value = price.value + price.serviceFee;
+					}
+
+					return value;
 				},
 				getQuantityOptions: function(price) {
 
@@ -114,6 +144,16 @@
 			setPriceIntervals: function(event) {
 				setPriceIntervals(event);
 			},
+			toggleFee: function(event) {
+				var includeFee = true;
+
+				if (event.node.value === 'false') {
+					includeFee= false;
+				}
+
+				this.set(event.keypath + '.includeFee', includeFee);
+				toggleFee(event);
+			}
 		});
 
 		getEvents = function(){
@@ -137,7 +177,7 @@
 				$.ajax(
 					eventListOptions.ajaxurl,
 					{
-						type: 'POST',
+						type: 'GET',
 						data: bptData,
 						accepts: 'json',
 						dataType: 'json'
@@ -237,10 +277,6 @@
 					}
 				}
 
-				if (data.error) {
-
-				}
-
 			}).fail();
 		};
 
@@ -281,7 +317,7 @@
 		setPriceIntervals = function(event) {
 			event.original.preventDefault();
 
-			var id = event.context.id.toString(),
+			var id = event.context.id,
 				interval = event.original.target.value,
 				price = {},
 				data = {
@@ -302,13 +338,40 @@
 				}
 			).always()
 			.done();
-		}
+		};
 
-		init = (function() {
+		toggleFee = function(event) {
+			event.original.preventDefault();
+
+			var id = event.context.id,
+				includeFee = event.original.target.value,
+				price = {},
+				data = {
+					bptNonce: eventListOptions.bptNonce,
+					action: 'bpt_set_price_include_fee',
+					includeFee: []
+				};
+
+			price[id] = includeFee;
+
+			data.includeFee.push(price);
+
+			$.ajax(
+				eventListOptions.ajaxurl,
+				{
+					type: 'POST',
+					data: data
+				}
+			).always()
+			.done();
+		};
+
+		init = function() {
 			getEvents();
-		})();
-	};
+		};
 
+		init();
+	};
 
 	$(document).ready(function() {
 

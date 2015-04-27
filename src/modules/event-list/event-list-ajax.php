@@ -14,27 +14,27 @@ class Ajax {
 	 * Get the Events
 	 */
 	public static function get_events() {
-
-		$nonce     = $_POST['nonce'];
+		$get = filter_input_array(INPUT_GET, FILTER_SANITIZE_ENCODED);
+		$nonce     = $get['nonce'];
 		$post_id   = null;
 		$client_id = null;
 		$event_id  = null;
 		$widget_id = null;
 
-		if ( isset( $_POST['postID'] ) ) {
-			$post_id = $_POST['postID'];
+		if ( isset( $get['postID'] ) ) {
+			$post_id = $get['postID'];
 		}
 
-		if ( isset( $_POST['clientID'] ) ) {
-			$client_id = $_POST['clientID'];
+		if ( isset( $get['clientID'] ) ) {
+			$client_id = $get['clientID'];
 		}
 
-		if ( isset( $_POST['eventID'] ) ) {
-			$event_id = $_POST['eventID'];
+		if ( isset( $get['eventID'] ) ) {
+			$event_id = $get['eventID'];
 		}
 
-		if ( isset( $_POST['widgetID'] ) ) {
-			$widget_id = $_POST['widgetID'];
+		if ( isset( $get['widgetID'] ) ) {
+			$widget_id = $post['widgetID'];
 		}
 
 		Utilities::check_nonce( $nonce, self::$nonce_title );
@@ -94,11 +94,11 @@ class Ajax {
 	}
 
 	public static function hide_prices() {
-
+		$post = filter_input_array(INPUT_POST, FILTER_SANITIZE_ENCODED);
 		$response = array();
-		$nonce = $_POST['nonce'];
+		$nonce = $post['nonce'];
 
-		if ( isset( $_POST['admin'] ) && $_POST['admin'] ) {
+		if ( isset( $post['admin'] ) && $post['admin'] ) {
 			$nonceTitle = 'bpt-admin-nonce';
 		} else {
 			$nonceTitle = 'bpt-event-list-nonce';
@@ -114,7 +114,11 @@ class Ajax {
 				$hidden_prices = array();
 			}
 
-			$prices = $_POST['prices'];
+			if ( ! is_array( $post['prices'] ) ) {
+				wp_send_json_error( 'No prices were sent.' );
+			}
+
+			$prices = $post['prices'];
 
 			$response['prices'] = $prices;
 
@@ -176,11 +180,11 @@ class Ajax {
 	}
 
 	public static function unhide_prices() {
-
+		$post = filter_input_array(INPUT_POST, FILTER_SANITIZE_ENCODED);
 		$response = array();
-		$nonce = $_POST['nonce'];
+		$nonce = $post['nonce'];
 
-		if ( isset( $_POST['admin'] ) ) {
+		if ( isset( $post['admin'] ) ) {
 			$nonceTitle = 'bpt-admin-nonce';
 
 		} else {
@@ -199,7 +203,7 @@ class Ajax {
 				$response['error'] = 'No hidden prices';
 			}
 
-			$prices = $_POST['prices'];
+			$prices = $post['prices'];
 			$response['prices'] = $prices;
 
 			foreach ( $prices as $price ) {
@@ -219,26 +223,24 @@ class Ajax {
 				$response['priceID'] = $price['priceId'];
 			}
 		} else {
-
 			$response = array(
 				'error' => 'Not authorized.',
 			);
-
 		}
 
 		wp_send_json( $response );
 	}
 
 	public static function set_price_max_quantity() {
-
-		if ( isset( $_POST['maxQuantity'] ) ) {
+		$post = filter_input_array( INPUT_POST, FILTER_SANITIZE_ENCODED );
+		if ( isset( $post['maxQuantity'] ) ) {
 			$max_quantity = get_option( '_bpt_price_max_quantity' );
 
 			if ( ! $max_quantity ) {
 				$max_quantity = array();
 			}
 
-			foreach ( $_POST['maxQuantity'] as $prices  ) {
+			foreach ( $post['maxQuantity'] as $prices  ) {
 
 				foreach ( $prices as $id => $max ) {
 
@@ -263,19 +265,21 @@ class Ajax {
 	}
 
 	public static function set_price_intervals() {
-		if ( isset( $_POST['intervals'] ) ) {
+		$post = filter_input_array( INPUT_POST, FILTER_SANITIZE_ENCODED );
+
+		if ( isset( $post['intervals'] ) ) {
 			$price_intervals = get_option( '_bpt_price_intervals' );
 
 			if ( ! $price_intervals ) {
 				$price_intervals = array();
 			}
 
-			foreach ( $_POST['intervals'] as $prices ) {
+			foreach ( $post['intervals'] as $prices ) {
 				foreach ( $prices as $id => $interval ) {
 					$id = intval( $id );
 					$interval = intval( $interval );
 
-					if ($interval === 0) {
+					if ( $interval === 0 ) {
 						unset( $price_intervals[ $id ] );
 						continue;
 					}
@@ -289,7 +293,56 @@ class Ajax {
 					array(
 						'success' => true,
 						'message' => 'Updated price interval.',
-						'interval' => $price_intervals
+						'interval' => $price_intervals,
+					)
+				);
+			}
+		}
+
+		wp_send_json_error( 'Unable to update price interval.' );
+	}
+
+	public static function set_price_include_fee() {
+
+		$post = filter_input_array( INPUT_POST, FILTER_SANITIZE_ENCODED );
+
+		if ( isset( $post['includeFee'] ) ) {
+			$price_include_fee = get_option( '_bpt_price_include_fee' );
+			$existing_include = $price_include_fee;
+
+			if ( ! $price_include_fee ) {
+				$price_include_fee = array();
+			}
+
+			foreach ( $post['includeFee'] as &$prices ) {
+				foreach ( $prices as $id => $include ) {
+					$id = intval( $id );
+					$include = ( $include === 'true' ? true : false );
+
+					if ( ! $include ) {
+						unset( $price_include_fee[ $id ] );
+						continue;
+					}
+
+					$price_include_fee[ $id ] = true;
+				}
+			}
+
+			if ( $existing_include === $price_include_fee ) {
+				wp_send_json(
+					array(
+						'success' => true,
+						'message' => 'Nothing to update.'
+					)
+				);
+			}
+
+			if ( update_option( '_bpt_price_include_fee', $price_include_fee ) ) {
+				wp_send_json(
+					array(
+						'success' => true,
+						'message' => 'Updated price include fee.',
+						'includeFee' => $price_include_fee,
 					)
 				);
 			}
@@ -357,8 +410,8 @@ class Ajax {
 
 		$events = self::filter_hidden_prices( $events );
 		$events = self::apply_max_quantity( $events );
-		$events = self::include_service_fee( $events );
 		$events = self::apply_intervals( $events );
+		$events = self::apply_include_fee( $events );
 		return $events;
 	}
 
@@ -388,7 +441,7 @@ class Ajax {
 					foreach ( $date['prices'] as &$price ) {
 						foreach ( $intervals as $interval ) {
 							if ( key( $intervals ) === $price['id'] ) {
-								$price['interval'] = $interval;
+								$price['interval'] = (integer) $interval;
 							}
 						}
 					}
@@ -399,6 +452,44 @@ class Ajax {
 		return $events;
 	}
 
+	private static function apply_include_fee( $events ) {
+
+		$all_include_fees = ( get_option( '_bpt_include_service_fee' ) === 'true' ? true : false );
+		$include_fee = get_option( '_bpt_price_include_fee' );
+
+		foreach ( $events as &$event ) {
+			foreach ( $event['dates'] as &$date ) {
+				foreach ( $date['prices'] as &$price ) {
+
+					if ( $all_include_fees ) {
+						$price['includeFee'] = true;
+						continue;
+					}
+
+					if ( ! empty( $include_fee ) ) {
+						foreach ( $include_fee as $include ) {
+
+							if ( array_key_exists( $price['id'], $include_fee ) ) {
+								$price['includeFee'] = $include;
+								continue;
+							}
+
+							$price['includeFee'] = false;
+							continue;
+						}
+					}
+				}
+			}
+		}
+
+		return $events;
+	}
+
+	/**
+	 * Include the service fee globally for all prices.
+	 * @param  array $events An array of events with dates and prices.
+	 * @return array The modified event array.
+	 */
 	private static function include_service_fee( $events ) {
 
 		if ( get_option( '_bpt_include_service_fee' ) === 'true' ) {

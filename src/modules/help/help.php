@@ -77,7 +77,7 @@ class Help extends Module {
 			$curl_version = curl_version();
 			echo '<strong>cURL Version: </strong>' . $curl_version['version'];
 			?>
-			<h4><a id="test-api" href="#test-api">Test connection to the API.</a></h4><div id="test-api-results"></div>
+			<!-- <h4><a id="test-api" href="#test-api">Test connection to the API.</a></h4><div id="test-api-results"></div> -->
 			<h4><a id="get-all-options" href="#get-debug">Get all options saved by the plugin</a></h4>
 			<div id="all-options-results">
 			</div>

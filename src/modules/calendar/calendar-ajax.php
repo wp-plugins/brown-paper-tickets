@@ -18,14 +18,14 @@ class Ajax {
 	 * @return json               The JSON string of the event Data.
 	 */
 	public static function get_events() {
-
-		$nonce           = $_REQUEST['nonce'];
-		$widget_instance = $_REQUEST['widgetID'];
+		$get = filter_input_array( INPUT_GET, FILTER_SANITIZE_ENCODED );
+		$nonce           = $get['nonce'];
+		$widget_instance = $get['widgetID'];
 
 		Utilities::check_nonce( $nonce, 'bpt-calendar-widget-nonce' );
 
-		if ( isset( $_REQUEST['clientID'] ) ) {
-			$client_id = $_REQUEST['clientID'];
+		if ( isset( $get['clientID'] ) ) {
+			$client_id = $get['clientID'];
 		} else {
 			$client_id = get_option( '_bpt_client_id' );
 		}

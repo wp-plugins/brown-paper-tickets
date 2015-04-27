@@ -165,7 +165,14 @@ if ( isset( $css ) ) {
 						{{{ unescapeHTML(name) }}}
 
 						</td>
-						<td class="bpt-price-value" data-price-value="{{ formatPrice(value, '<?php esc_attr_e( $currency ); ?>' ) }}">{{ formatPrice(value, '<?php esc_attr_e( $currency ); ?>' ) }}</td>
+						<td class="bpt-price-value" data-price-value="{{ formatPrice(priceValue(.), '<?php esc_attr_e( $currency ); ?>' ) }}">
+							{{ formatPrice(priceValue(.), '<?php esc_attr_e( $currency ); ?>' ) }}
+							{{^.includeFee}}
+							{{ #value }}
+							<small>({{formatServiceFee(.serviceFee + .value, '<?php esc_attr_e( $currency ); ?>')}} w/service fee)</small>
+							{{/value}}
+							{{ /.includeFee }}
+						</td>
 						<td>
 							<select class="bpt-price-qty" name="price_{{ id }}" data-price-id="{{ id }}">
 								{{{ getQuantityOptions( . ) }}}
@@ -180,7 +187,7 @@ if ( isset( $css ) ) {
 							<!-- <h5>Price Options</h5> -->
 							<span>
 								<label for="bpt-price-hidden-{{ id }}" class="bpt-admin-option bpt-price-hidden">Display Price</label>
-								<select id="bpt-price-hidden-{{ id }}" on-change="togglePriceVisibility" class="bpt-admin-option bpt-price-hidden" data-price-id="{{ id }}">
+								<select id="bpt-price-hidden-{{ id }}" on-change="togglePriceVisibility" class="bpt-admin-option bpt-price-hidden" data-price-id="{{ id }}" data-price-name="{{ name }}">
 									<option {{ ^hidden }}selected{{ /hidden }} value="true">Yes</option>
 									<option {{ #hidden }}selected{{ /hidden }}value="false">No</option>
 								</select>
@@ -192,6 +199,13 @@ if ( isset( $css ) ) {
 							<span>
 								<label class="bpt-admin-option bpt-price-interval" for="bpt-price-interval-{{ id }}">Set Interval</label>
 								<input id="bpt-price-interval-{{ id }}" type="text" value="{{ .interval }}" class="bpt-admin-option bpt-price-interval" on-change="setPriceIntervals" placeholder="1">
+							</span>
+							<span>
+								<label for="bpt-price-include-fee-{{ id }}" class="bpt-admin-option bpt-price-include-fee">Include Service Fee</label>
+								<select id="bpt-price-include-fee-{{ id }}" on-change="toggleFee" class="bpt-admin-option bpt-price-inclue-fee" data-price-id="{{ id }}" data-price-name="{{ name }}">
+									<option {{ #includeFee }}selected{{ /includeFee }} value="true">Yes</option>
+									<option {{ ^includeFee }}selected{{ /includeFee }} value="false">No</option>
+								</select>
 							</span>
 						</td>
 					</tr>

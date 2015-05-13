@@ -105,6 +105,10 @@ No upgrade notes.
 
 == Changelog ==
 
+= v0.6.1 =
+
+* Updated BptAPI library to fix an issue that caused the API to reject requests.
+
 = v0.6.0 =
 
 **New Features**

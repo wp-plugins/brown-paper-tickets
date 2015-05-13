@@ -191,7 +191,9 @@ class EventInfo extends BptAPI
         $apiOptions = array(
             'endpoint' => 'pricelist',
             'event_id' => $eventID,
-            'date_id' => $dateID
+            'date_id' => $dateID,
+            'show_order' => true,
+            'includepassword' => 1,
         );
 
         $priceXML = $this->parseXML($this->callAPI($apiOptions));
@@ -212,6 +214,8 @@ class EventInfo extends BptAPI
                 'serviceFee'=> (float) $price->service_fee,
                 'venueFee'=> (float) $price->venue_fee,
                 'live'=> (boolean) $this->convertToBool($price->live),
+                'order' => (integer) ($price->order ? $price->order : 1),
+                'password' => (string) $price->password,
             );
 
             $prices[] = $single_price;
@@ -244,7 +248,7 @@ class EventInfo extends BptAPI
         $url = 'https://www.brownpapertickets.com/eventimages.rss?e_number=' . $eventID;
 
         curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_SSLVERSION, 3);
+        curl_setopt($ch, CURLOPT_SSLVERSION, 4);
         curl_setopt($ch, CURLOPT_HEADER, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 

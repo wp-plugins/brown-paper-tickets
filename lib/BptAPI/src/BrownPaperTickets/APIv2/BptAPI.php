@@ -71,13 +71,13 @@ class BptAPI
      *
      * @param string $devID Your Brown Paper Tickets Developer ID
      */
-    
+
     /**
      * Initializes the class, sets the Developer ID and any optional parameters
      * in the `$params` variable.
      * @param string $devID  Your Brown Paper Tickets developer ID.
      * @param array  $params An array of options that can set the following properties.
-     * 
+     *
      * | parameter | type | description                       |
      * |-----------|------|-----------------------------------|
      * | logErrors | bool | Whether or not to log the errors. |
@@ -126,7 +126,7 @@ class BptAPI
         $ch = curl_init();
 
         curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_SSLVERSION, 3);
+        curl_setopt($ch, CURLOPT_SSLVERSION, 4);
         curl_setopt($ch, CURLOPT_HEADER, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
@@ -165,7 +165,7 @@ class BptAPI
     }
 
     /**
-     * Sets an option. 
+     * Sets an option.
      * @param string  $option The options name.
      * @param mixed   $value  The value of the option.
      *
@@ -194,7 +194,7 @@ class BptAPI
 
     /**
      * Gets the option.
-     * 
+     *
      * @param   $option string The name of the option.
      * @return  mixed   The value of the option.
      */
@@ -346,7 +346,7 @@ class BptAPI
 
     /**
      * Converts a boolean to a string.
-     * 
+     *
      * @param  string $value The string to check.
      * @return boolean       The boolean value of the string
      */

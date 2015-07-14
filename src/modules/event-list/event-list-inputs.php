@@ -25,7 +25,7 @@ class Inputs {
 				<span>?</span>
 				<div>
 					<p>
-						This option determines whether or not your event's prices will appear in your event listing.
+						This option determines whether or not your event's dates will appear in your event listing.
 					</p>
 				</div>
 			</div>

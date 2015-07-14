@@ -155,8 +155,8 @@ if ( isset( $css ) ) {
 					<input name="date_id" value="{{ id }}" type="hidden">
 					<table id="price-list-{{ id }}" class="bpt-event-list-prices">
 					<tr>
-						<th>Price Name</th>
-						<th>Price Value</th>
+						<th>Admission Level</th>
+						<th>Price</th>
 						<th>Quantity</th>
 					</tr>
 					{{ #prices }}

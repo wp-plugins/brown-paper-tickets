@@ -14,8 +14,8 @@ class Ajax {
 	 * Get the Events
 	 */
 	public static function get_events() {
-		$get = filter_input_array(INPUT_GET, FILTER_SANITIZE_ENCODED);
-		$nonce     = $get['nonce'];
+		$get = filter_input_array( INPUT_GET, FILTER_SANITIZE_ENCODED );
+		$nonce	 = $get['nonce'];
 		$post_id   = null;
 		$client_id = null;
 		$event_id  = null;
@@ -50,7 +50,7 @@ class Ajax {
 		}
 
 		if ( ! get_transient( '_bpt_event_list_events' . $post_id ) ) {
-			set_transient( '_bpt_event_list_events' . $post_id , $events->get_events( $client_id, $event_id ), Utilities::cache_time() );
+			set_transient( '_bpt_event_list_events' . $post_id, $events->get_events( $client_id, $event_id ), Utilities::cache_time() );
 		}
 
 		$events = get_transient( '_bpt_event_list_events' . $post_id  );
@@ -75,7 +75,7 @@ class Ajax {
 	 * Gets a specific event from an array of events.
 	 * @param  integer $eventId The event ID.
 	 * @param  mixed $events Either a json string or an array of events.
-	 * @return mixed            Returns the single event array or false if no event.
+	 * @return mixed			Returns the single event array or false if no event.
 	 */
 	private static function get_single_event( $event_id, $events ) {
 		if ( is_string( $events ) ) {
@@ -130,23 +130,19 @@ class Ajax {
 
 				if ( empty( $price['eventTitle'] ) ) {
 					$response['error'] = 'Event title is required.';
-
 				}
 
 
 				if ( empty( $price['eventId'] ) ) {
 					$response['error'] = 'Event ID is required.';
-
 				}
 
 				if ( empty( $price['priceId'] ) ) {
 					$response['error'] = 'Price ID is required.';
-
 				}
 
 				if ( empty( $price['priceName'] ) ) {
 					$response['error'] = 'Price name is required.';
-
 				}
 
 				$id = $price['priceId'];
@@ -513,7 +509,7 @@ class Ajax {
 	/**
 	 * Filter Hidden Prices
 	 * @param  mixed $events Either a json string or an array of events.
-	 * @return array         The modified/filtered array.
+	 * @return array		 The modified/filtered array.
 	 */
 	private static function filter_hidden_prices( $events ) {
 

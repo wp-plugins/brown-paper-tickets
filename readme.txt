@@ -3,8 +3,8 @@ Contributors: Chandler Blum
 Donate Link: N/A
 Tags: bpt, brown paper tickets
 Requires at least: 3.6
-Tested up to: 4.2.1
-Stable tag: 0.6.1
+Tested up to: 4.2.2
+Stable tag: 0.6.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -104,6 +104,17 @@ Go to BPT Settings and click on the appearance tab. You can add custom CSS there
 No upgrade notes.
 
 == Changelog ==
+
+= v0.6.2 =
+
+Merging in pull requests from [razordaze](https://github.com/razordaze):
+
+**Bug Fixes**
+
+* Added address fields to calendar event response and widget.
+* Minor CSS fixes/improvements.
+* Minor tool tip correction.
+* Small Template Update to price list table headers.
 
 = v0.6.1 =
 

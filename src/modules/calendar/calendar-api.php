@@ -49,6 +49,8 @@ class Api extends \BrownPaperTickets\Modules\ModuleApi {
 							'timeStart' => $date['timeStart'],
 							'timeEnd' => $date['timeEnd'],
 							'title' => $event['title'],
+							'address1' => $event['address1'],
+							'address2' => $event['address2'],
 							'city' => $event['city'],
 							'state' => $event['state'],
 							'zip' => $event['zip'],

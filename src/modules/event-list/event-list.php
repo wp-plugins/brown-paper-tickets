@@ -7,6 +7,10 @@ require_once( plugin_dir_path( __FILE__ ) . '/event-list-inputs.php' );
 require_once( plugin_dir_path( __FILE__ ) . '/event-list-ajax.php' );
 require_once( plugin_dir_path( __FILE__ ) . '/event-list-shortcode.php' );
 
+
+/**
+ * The Event List class sets the options for the EventList.
+ */
 class EventList extends \BrownPaperTickets\Modules\Module {
 
 	static $section_suffix = '_event';

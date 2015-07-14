@@ -1,7 +1,3 @@
-.bpt-calendar-widget, .bpt-calendar-shortcode {
-
-}
-
 /**
  * Calendar Controls
  */
@@ -12,14 +8,15 @@
 .bpt-calendar-widget-controls-month {
     width: 80%;
     padding: 5px;
-    font-size: bold;
+    font-size: 2em;
+    line-height: 1.5em;
+    font-weight: bold;
     text-align: center;
     display: inline-block;
-    box-sizing: -moz-border-box;
-    box-sizing: -webkit-border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
     box-sizing: border-box;
     float: left;
-    line-height: 1.5em;
 }
 
 .bpt-calendar-shortcode .bpt-calendar-widget-controls-button,
@@ -27,12 +24,12 @@
     width: 10%;
     float: left;
     font-size: 2em;
+    line-height: 1.5em;
     cursor: pointer;
     display: inline-block;
-    box-sizing: -moz-border-box;
-    box-sizing: -webkit-border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
     box-sizing: border-box;
-
 }
 
 .bpt-calendar-shortcode .bpt-calendar-widget-controls-previous-button,
@@ -51,7 +48,6 @@
 .bpt-calendar-widget .clndr {
     width: 100%;
     float: left;
-    
 }
     .bpt-calendar-shortcode .bpt-calendar-widget-table,
     .bpt-calendar-widget .bpt-calendar-widget-table {
@@ -127,6 +123,6 @@
     margin-bottom: 10px;
 }
 
-    .bpt-calendar-widget-event-view-buy-tickets {
-        color: inherit;
-    }
+.bpt-calendar-widget-event-view-buy-tickets {
+    color: inherit;
+}

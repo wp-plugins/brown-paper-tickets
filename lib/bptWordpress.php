@@ -29,9 +29,6 @@ class BptWordpress {
 		if ( ! self::cache_enabled() ) {
 			return false;
 		}
-
-		
-
 	}
 
 	public static function cache_enabled() {

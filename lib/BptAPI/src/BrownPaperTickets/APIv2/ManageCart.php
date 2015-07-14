@@ -74,7 +74,7 @@ class ManageCart extends BptAPI
         if ($cartID) {
 
             $this->cartID = $cartID;
-            $this->createdAt = $createdAt;
+            $this->cartCreatedAt = $createdAt;
 
             if ($this->isExpired()) {
                 return array('success' => false, 'message' => 'Cart has expired.');
@@ -115,7 +115,7 @@ class ManageCart extends BptAPI
      */
     public function isExpired()
     {
-        if ($this->cartCreatedAt + $this->cartTtl < time()) {
+        if ($this->cartCreatedAt + $this->cartTtl <  time()) {
             $this->cartID = null;
             return true;
         }

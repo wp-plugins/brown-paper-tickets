@@ -5,7 +5,8 @@
         customDateFormat,
         customTimeFormat,
         bptWelcomePanel,
-        bptAPI,
+        allOptions,
+        admin,
         appearanceTab;
 
     navigation = {
@@ -182,18 +183,18 @@
         }
     };
 
-    bptAPI = {
+    admin = {
         getAccount: function getAccount() {
             $.ajax(
                 bptWP.ajaxurl,
                 {
-                    type: 'POST',
+                    type: 'GET',
                     data: {
                         // wp ajax action
                         action : 'bpt_get_account',
                         // varsx
                         // send the nonce along with the request
-                        bptNonce : bptWP.bptNonce,
+                        nonce : bptWP.nonce,
                         bptData: 'account',
                     },
                     accepts: 'json',
@@ -220,7 +221,7 @@
                         action : 'bpt_delete_cache',
                         // vars
                         // send the nonce along with the request
-                        bptNonce : bptWP.bptNonce,
+                        bptNonce : bptWP.nonce,
                     },
                     accepts: 'json',
                     dataType: 'json'
@@ -266,7 +267,7 @@
                     type: 'POST',
                     data: {
                         action: 'bpt_unhide_prices',
-                        bptNonce: bptWP.bptNonce,
+                        nonce: bptWP.nonce,
                         admin: true,
                         prices: [price]
                     },
@@ -285,7 +286,26 @@
             .fail(function(data) {
 
             });
-        }
+        },
+        getAllOptions: function getAllOptions(event) {
+            event.preventDefault();
+            var resultsBox = $('#debug-options-results');
+            $.ajax(
+                bptWP.ajaxurl,
+                {
+                    type: 'GET',
+                    data: {
+                        action: 'bpt_get_all_options',
+                        nonce: bptWP.nonce,
+                    },
+                }
+            )
+            .always(function(){})
+            .done(function(data) {
+                allOptions.set('options', data);
+            })
+            .fail(function(){});
+        },
     };
 
     $(document).ready(function() {
@@ -317,13 +337,16 @@
         $('#bpt-delete-cache').click(function(event) {
             event.preventDefault();
             $('.bpt-loading').show();
-            bptAPI.deleteCache();
+            admin.deleteCache();
         });
 
         $('a.bpt-unhide-price').click(function(event) {
             event.preventDefault();
-            bptAPI.unhidePrice(event);
+            admin.unhidePrice(event);
         });
+
+        $('a#get-all-options').click(admin.getAllOptions);
+        $('a#test-api').click(admin.testApi);
 
         bptWelcomePanel = new Ractive({
             el: '.bpt-welcome-panel-content',
@@ -331,7 +354,13 @@
             data: {}
         });
 
-        bptAPI.getAccount();
+        allOptions = new Ractive({
+            el: '#all-options-results',
+            template: '#all-options-template',
+            data: {options: []}
+        });
+
+        admin.getAccount();
 
         appearanceTab();
     });

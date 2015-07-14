@@ -3,8 +3,8 @@ Contributors: Chandler Blum
 Donate Link: N/A
 Tags: bpt, brown paper tickets
 Requires at least: 3.6
-Tested up to: 4.1.1
-Stable tag: 0.3.1
+Tested up to: 4.2.2
+Stable tag: 0.6.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -105,7 +105,70 @@ No upgrade notes.
 
 == Changelog ==
 
-= v0.3.1 = 
+= v0.6.2 =
+
+Merging in pull requests from [razordaze](https://github.com/razordaze):
+
+**Bug Fixes**
+
+* Added address fields to calendar event response and widget.
+* Minor CSS fixes/improvements.
+* Minor tool tip correction.
+* Small Template Update to price list table headers.
+
+= v0.6.1 =
+
+* Updated BptAPI library to fix an issue that caused the API to reject requests.
+
+= v0.6.0 =
+
+**New Features**
+
+* Added ability to set whether or not to include the service fee on an individual price.
+
+**Bug Fixes**
+
+* Fixed some input sanitization.
+* Fixed bug where the price name was undefined in the hidden prices section of the event list options.
+
+= v0.5.0 =
+
+**New Features**
+
+* Added ability to set a price's interval.
+
+**Bug Fixes**
+
+* Fixed bug that made the price's quantity wacky when changing the max quantity or the interval.
+
+= v0.4.1 =
+
+**Bug Fixes**
+
+* Fixed bug where event list display options weren't being applied if the cache wasn't enabled. #fixes 10
+* Added various empty index.php files to prevent directory listings on misconfigured servers.
+
+= v0.4.0 =
+
+**New Features**
+
+* Added ability to change the text of the calendar's event list text.
+* Added ability to change the text of the calendar's buy tickets links.
+
+**Improvements**
+
+* Updated FAQ.
+* Added some debug information gathering to the help tab.
+* Major reorganization of code base.
+
+**Bug Fixes**
+
+* Fixed link to the setup wizard on the help tab.
+* Fixed bug where the Welcome message wasn't being displayed properly when the
+data wasn't cached.
+* Fixed bug where custom date format wasn't being displayed properly on the calendar.
+
+= v0.3.1 =
 
 * Fixed bug where events without dates would throw errors.
 

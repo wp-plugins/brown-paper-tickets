@@ -24,12 +24,12 @@
                     type: 'POST',
                     data: {
                         // wp ajax action
-                        action : 'bpt_account_test',
+                        action : 'bpt_test_account',
                         // vars
                         devID : $('input[name="_bpt_dev_id"]').val(),
                         clientID : $('input[name="_bpt_client_id"]').val(),
                         // send the nonce along with the request
-                        bptNonce: bptSetupWizardAjax.bptSetupWizardNonce,
+                        nonce: bptSetupWizardAjax.nonce,
                     },
                     accepts: 'json',
                     dataType: 'json'

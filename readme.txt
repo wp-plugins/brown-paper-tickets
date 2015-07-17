@@ -4,7 +4,7 @@ Donate Link: N/A
 Tags: bpt, brown paper tickets
 Requires at least: 3.6
 Tested up to: 4.2.2
-Stable tag: 0.6.2
+Stable tag: 0.6.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -104,6 +104,12 @@ Go to BPT Settings and click on the appearance tab. You can add custom CSS there
 No upgrade notes.
 
 == Changelog ==
+
+= v0.6.3 =
+
+**Bug Fixes**
+
+* Fixed issue where the account_test would throw an invalid argument error if the API library doesn't find any events. Fixes #23
 
 = v0.6.2 =
 

@@ -31,6 +31,10 @@ class Api extends \BrownPaperTickets\Modules\ModuleApi {
 			'events'  => $event_list->getEvents( $client_id ),
 		);
 
+		if ( ! $response['events'] ) {
+			$response['events'] = array();
+		}
+
 		$response['events'] = Utilities::remove_bad_events( $response['events'] );
 
 		return $response;

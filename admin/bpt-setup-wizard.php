@@ -41,7 +41,7 @@ $menu_slug = BPTPlugin::get_menu_slug();
 			<li>Click on "Developer Tools"</li>
 			<li>Click on "Add Developer Tools"</li>
 			<li>
-				You'll see a new <a href="https://www.brownpapertickets.com/developer/index.html" target="_blank">Developer</a> 
+				You'll see a new <a href="https://www.brownpapertickets.com/developer/index.html" target="_blank">Developer</a>
 				link in the navigation menu.</li>
 			<li>Go <a href="https://www.brownpapertickets.com/developer/index.html" target="_blank">there</a> to find your Developer ID.</li>
 			<li>Enter your Developer ID EXACTLY as it appears into the box above</li>
@@ -58,16 +58,16 @@ $menu_slug = BPTPlugin::get_menu_slug();
 		</h3>
 		<?php AccountInputs::client_id(); ?>
 		<p>
-			Your Client ID is the Brown Paper Tickets <em>username</em> 
+			Your Client ID is the Brown Paper Tickets <em>username</em>
 			of your (or the producer whose events you want to list) account.
 		</p>
 		<p>
-			Brown Paper Tickets will allow you to log in using either 
+			Brown Paper Tickets will allow you to log in using either
 			your username or the email address associated with your account.
 		<p>
 			Sometimes they are the same, sometimes they are not.
 		<p>
-			If you are having issues determining what your username is, 
+			If you are having issues determining what your username is,
 			please contact Client Services at 1.800.838.3006 or send them
 			an <a href="mailto:support@brownpapertickets.com">email</a>.
 		</p>
@@ -82,7 +82,7 @@ $menu_slug = BPTPlugin::get_menu_slug();
 			Time to test your Developer ID and Client ID.
 		</h3>
 		<p>
-			If you are having issues determining what your username is, 
+			If you are having issues determining what your username is,
 			please contact Client Services at 1.800.838.3006 or send them
 			an <a href="mailto:support@brownpapertickets.com">email</a>.
 		</p>
@@ -111,7 +111,7 @@ $menu_slug = BPTPlugin::get_menu_slug();
 	</div>
 	<div class="bpt-setup-wizard-debug">
 
-	
+
 	</div>
 
 </div>
@@ -151,6 +151,14 @@ $menu_slug = BPTPlugin::get_menu_slug();
 			<h2>Hello {{ firstName }}.</h2>
 		</div>
 	{{ /account }}
+
+	<div class="bpt-no-events {{ events == false ? '' : 'hidden' }}">
+		<p>You're account doesn't seem to have any active events. When your events go live, the plugin will be able to access them.</p>
+		<div class="bpt-setup-wizard-button-container">
+			<button class="bpt-setup-wizard-prev-step button-secondary button-large">Previous</button>
+			<button class="bpt-setup-wizard-next-step button-primary button-large bpt-setup-wizard-save" disabled="{{ .eventError || .accountError ? 'disabled' : '' }}">Save and Continue</button>
+		</div>
+	</div>
 
 	<div class="{{ .events.length > 0 ? '' : 'hidden' }}">
 		<h3>You currently have these {{ .liveEvents( .events ) }} events active on Brown Paper Tickets</h3>
